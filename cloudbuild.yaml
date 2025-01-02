@@ -1,10 +1,10 @@
 steps:
 
   - id: 'Build'
-    name: 'gcr.io/cloud-builders/docker'
+    name: 'docker'
     args: [
       'build',
-      '-t', 'gcr.io/milestone-auto-supplies/milestone-website:latest',
+      '-t', 'gcr.io/milestone-auto-supplies/milestone-websie:latest',
       '.'
     ]
     env:
