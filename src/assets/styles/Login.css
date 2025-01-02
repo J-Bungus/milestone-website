@@ -1,0 +1,95 @@
+.login-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  background-image: url("../imgs/login_background.jpg");
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-position: center;
+}
+
+.login-modal {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  border-radius: 20px;
+  background-color: #E4E4E4;
+  padding: 25px 30px 25px 30px;
+  opacity: 85%;
+}
+
+.login-title {
+  font-size: 38px;
+  font-weight: bold;
+  color: #040072;
+}
+
+.login-description {
+  font-size: 20px;
+  color: #5e5e5e;
+}
+
+.login-inputs div {
+  font-size: 28px;
+  margin-top: 25px;
+  display: flex;
+}
+
+input {
+  margin-top: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: #ffffff;
+  height: 45px;
+  width: 100%;
+  font-size: 20px;
+  padding: 0px 10px;
+  box-sizing: border-box;
+}
+
+.login-inputs a {
+  font-size: 20px;
+  color: #040072;
+}
+
+.login-inputs span {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.login-inputs div input {
+  width: auto;
+  margin-top: 6px;
+  transform: scale(1.3);
+  margin-left: 10px;
+}
+
+.login-inputs .login-options div {
+  margin-top: 0px;
+}
+
+.login-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0px !important;
+  margin-bottom: 15px;
+}
+
+.login-modal button {
+  margin: auto;
+  width: 25%;
+  font-size: 30px;
+  padding: 5px 0px;
+  background-color: #0046AE;
+  border-color: #0046AE;
+  color: white;
+  border-radius: 10px;
+}
+
+.error-msg {
+  margin-top: 5px !important;
+  font-size: 18px !important;
+  color: red;
+}

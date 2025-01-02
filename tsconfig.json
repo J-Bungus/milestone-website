@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "typeRoots": ["./types", "./node_modules/@types"],
+    "jsx": "react",
+    "lib": [ "ES2015", "dom"] 
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

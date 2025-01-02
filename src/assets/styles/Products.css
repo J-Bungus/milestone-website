@@ -1,0 +1,93 @@
+.products-page {
+  display: flex;
+  background-color: #EFEFF0;
+  min-height: 90vh; /* Ensures full page height */
+  padding: 50px; /* More flexible padding */
+  justify-content: flex-start;
+  align-items: center; /* Align items to the top for longer lists */
+  box-sizing: border-box;
+  flex-direction: column;
+}
+
+.products-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Add spacing between items */
+  max-width: 1200px; /* Limit the content width for better readability */
+  justify-content: center; /* Center align the products */
+}
+
+.search-wrapper {
+  display: flex;
+  width: 30vw;
+  height: fit-content;
+  margin-bottom: 25px;
+}
+
+.search {
+  margin-top: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  font-size: 20px !important;
+  outline: none;
+}
+
+.search-button {
+  border-bottom-left-radius: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: rgb(0, 206, 0);
+  border-color: rgb(0, 206, 0);
+  color: white;
+  font-family: Lato;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.search-button:hover {
+  background-color: rgb(0, 109, 0)
+}
+
+.menu-wrapper {
+  position: absolute;
+  left: 3%;
+}
+
+.menu {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  width: 250px;
+}
+
+.MuiTreeItem-root {
+  width: 100%;
+}
+.paginate-wrapper {
+  margin-top: 20px;
+}
+
+.paginate-wrapper ul {
+  padding-left: 0px;
+  margin-left: -40px;
+  margin-top: auto;
+}
+
+.paginate-wrapper a {
+  border: 1px black solid;
+  padding: 5px 15px;
+  border-radius: 5px;
+}
+
+.paginate-wrapper a:hover {
+  background-color: black;
+  color: white;
+}
+
+
+@media (max-width: 768px) {
+  .products-page {
+    padding: 10px; /* Reduce padding for smaller screens */
+  }
+}

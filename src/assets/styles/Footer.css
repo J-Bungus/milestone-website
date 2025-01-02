@@ -1,0 +1,32 @@
+.footer-wrapper {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  background-color: #2F2B2B;
+  justify-content: space-around;
+  box-sizing: border-box;
+}
+
+.footer-section {
+  width: 50%;
+  padding: 0px 50px;
+  color: white;
+}
+
+.footer-section-title {
+  color: #CBC9FF;
+  margin-bottom: 0px;
+}
+
+.footer-section ul {
+  margin-top: 5px;
+}
+
+.footer-section li {
+  list-style-type: disc;
+  margin-left: 0px;
+}
+
+.footer-section p {
+  margin-top: 5px;
+}

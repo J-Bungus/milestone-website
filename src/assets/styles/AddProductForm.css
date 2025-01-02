@@ -1,0 +1,87 @@
+.add-product-wrapper {
+  display: flex;
+  height: 90%;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+  border: solid 2px black;
+  border-radius: 20px;
+  width: 505px;
+  padding: 25px;
+  overflow: scroll;
+  max-height: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.product-form .account-field {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+}
+
+.product-form .description {
+  position: unset;
+}
+
+.switch-wrapper {
+  flex: 1;
+  max-width: 250px;
+}
+
+.account-field > span {
+  white-space: nowrap;
+}
+
+.product-form .account-field input {
+  max-width: unset;
+}
+
+.account-field textarea {
+  display: block;
+  font-size: 15px;
+  border: solid 1px gray;
+  border-radius: 0px;
+  padding: 5px 10px;
+  flex: 1;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.image-input {
+  max-width: 300px !important;
+}
+
+.preview-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.preview-wrapper {
+  width: 100px;
+  min-width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border: solid 3px blue;
+  border-radius: 15px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.preview-img{
+  box-sizing: border-box;
+  max-width: 100%;
+  max-height: 100%;
+}

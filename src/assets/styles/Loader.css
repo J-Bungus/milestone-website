@@ -1,0 +1,24 @@
+.loading-page {
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgb(158, 158, 158, 0.5);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.loader {
+  animation: rotate 2s infinite linear;
+  width: 50px;
+  height: auto;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

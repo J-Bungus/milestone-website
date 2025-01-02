@@ -1,0 +1,93 @@
+@import "~react-image-gallery/styles/css/image-gallery.css";
+.specific-product-page {
+  display: flex;
+  font-family: Lato !important;
+  padding: 50px;
+  height: 60%;
+  box-sizing: border-box;
+}
+
+.left-column {
+  width: 45%;
+  height: 100%;
+  margin-right: 50px;
+}
+
+.right-column {
+  width: 50%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.specific-item-name {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.specific-part-number {
+  margin: 20px;
+}
+
+.part-info-section {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+}
+
+.specific-part-number span {
+  font-weight: bold;
+}
+
+.package-types {
+  margin-left: 20px;
+  margin-bottom: 15px;
+}
+
+.package-types span {
+  font-weight: bold;
+}
+
+.part-info-row {
+  width: 60%;
+  border-top-style: solid;
+  border-top-width: 1px;
+  padding: 7px 10px;
+
+  border-color: gray;
+}
+
+.part-info-row:nth-child(even) {
+  background-color: rgb(230, 230, 230);
+}
+
+.row-label {
+  display: inline-block;
+  width: 50%;
+}
+
+.row-value {
+  display: inline-block;
+  width: 50%;
+}
+
+.image-gallery-slides {
+  max-width: 750px;
+  max-height: 600px;
+}
+
+.specific-img-gallery {
+  overflow: hidden;
+  transition: none !important;
+}
+
+.image-gallery-image {
+  max-height: calc(90vh - 80px) !important;
+  background-size: cover;
+}
+
+.MuiChip-root {
+  margin-left: 20px !important;
+  font-family: Lato !important;
+}

@@ -1,0 +1,46 @@
+.button-wrapper {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  width: fit-content;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.button-wrapper input {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  width: 90%;
+  border-top: 2px #EFEFF0 solid;
+  border-bottom: 2px #EFEFF0 solid;
+  box-sizing: border-box;
+  border-radius: 0px;
+  height: 100%;
+  margin: 0px;
+  text-align: center;
+  font-size: 18px;
+  padding: 5% 5%;
+  outline: none;
+}
+
+.amount-button {
+  background-color: #EFEFF0;
+  border-width: 0px;
+  height: 100%;
+  font-size: 20px;
+  padding: 0px 15px;
+}
+
+.amount-button:active {
+  background-color: #8f8f8f;
+}
+
+.left {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.right {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}

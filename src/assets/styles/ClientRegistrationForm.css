@@ -1,0 +1,21 @@
+.client-registration-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90%;
+}
+
+.registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  border: solid 2px black;
+  border-radius: 20px;
+  width: fit-content;
+  padding: 25px;
+}
+
+.registration-form .cart-action {
+  margin-top: 15px;
+}

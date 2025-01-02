@@ -1,0 +1,50 @@
+.account-wrapper {
+  width: 100%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.account-field-wrapper {
+  width: 30%;
+  display: flex;
+}
+
+.account-field {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  flex: 1;
+}
+
+.account-field > span {
+  font-size: 20px;
+  font-weight: bold;
+  width: 150px;
+}
+
+.account-field > input {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  font-size: 15px;
+  height: fit-content;
+  margin-top: 0px;
+  border: solid 1px gray;
+  border-radius: 0px;
+  padding: 5px 10px;
+  max-width: 180px;
+  flex: 1;
+}
+
+.change-password {
+  margin-left: 5px;
+  background-color: rgb(25, 25, 170);
+  border-color: rgb(25, 25, 170);
+  color: white;
+  border-radius: 15px;
+  padding: 5px 10px;
+}
