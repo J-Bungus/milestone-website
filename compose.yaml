@@ -13,6 +13,7 @@ services:
       context: .
     environment:
       - NODE_ENV=production
+      - DOCKER_BUILDKIT=1
       - REACT_APP_API
       - REACT_APP_GCP_BUCKET_URL
 
