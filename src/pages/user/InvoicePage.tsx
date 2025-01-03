@@ -115,7 +115,7 @@ const InvoicePage = () => {
                   return (
                     <tr className="non-empty-rows">
                       <td className="item">
-                        {item.product.msa_id}
+                        {item.product.msa_id}{item.package_type === "big" && "B"}
                       </td>
                       <td className="description">
                         {item.product.description}

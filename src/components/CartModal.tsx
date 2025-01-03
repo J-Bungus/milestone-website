@@ -4,28 +4,14 @@ import { Cart, CartModalProps, Item } from "../types";
 import "../assets/styles/CartModal.css";
 import { useNavigate } from "react-router-dom";
 
+const closeIcon = require("../assets/imgs/close_icon.png");
+
 const CartModal = ({ onBlur }: CartModalProps) => {
   const navigate = useNavigate();
   const modalRef = useRef<HTMLDivElement>(null);
   const [cart, setCart] = useGlobal("cart");
   const [loading, setLoading] = useGlobal("loading");
   const [items, setItems] = useState<Array<Item>>([]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      console.log("target", target);
-      if (modalRef.current && !modalRef.current.contains(target as Node) && target.className !== "cart-button" && target.className !== "cart-img") {
-        onBlur();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [onBlur]);
 
   useEffect(() => {
     const fetchUserCart = async (token: string) => {
@@ -36,7 +22,7 @@ const CartModal = ({ onBlur }: CartModalProps) => {
       });
 
       console.log("fetched data", cartData);
-      const newCart:Cart = {};
+      const newCart: Cart = {};
       if (cartData.data.cart) {
         setItems(cartData.data.cart.items);
         cartData.data.cart.items.map((item: Item) => {
@@ -60,7 +46,7 @@ const CartModal = ({ onBlur }: CartModalProps) => {
         }
       });
 
-      const updatedCart = {...cart};
+      const updatedCart = { ...cart };
       delete updatedCart[msa_id];
       setCart(updatedCart);
       setItems(items.filter(item => item.product.msa_id !== msa_id));
@@ -76,62 +62,70 @@ const CartModal = ({ onBlur }: CartModalProps) => {
   };
 
   return (
-    <div 
+    <div
       ref={modalRef}
       className="cart-modal-wrapper"
     >
-      <table>
-        <thead>
-          <tr>
-            <th style={{ border: "none" }}></th>
-            <th>Name</th>
-            <th>Part #</th>
-            <th>Unit</th>
-            <th>Quantity</th>
-            <th>Unit</th>
-          </tr>
-        </thead>
-        <tbody>
-          {  items.map(item => {
-            return (
-              <tr>
-                <td style={{ border: "none", color: "red", backgroundColor: "white" }}>
-                  <span
-                    onClick={() => {
-                      clearCart(item.product.msa_id);
-                    }}
-                    style={{ cursor: "pointer" }}
-                  >
-                    x
-                  </span>
-                </td>
-                <td className="item-name">
-                  {item.product.name}
-                </td>
-                <td>
-                  {item.product.msa_id}
-                </td>
-                <td>
-                  {
-                    item.package_type === "individual"
-                      ? `individual units (${item.product.unit_type})`
-                      : item.package_type === "small"
-                        ? `small package (${item.product.package_size} ${item.product.unit_type})`
-                        : `big package (${item.product.package_size} ${item.product.unit_type})`
-                  }
-                </td>
-                <td>
-                  {item.amount}
-                </td>
-                <td>
-                  {item.product.unit_type}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      
+      <div style={{display: "flex"}}>
+        <table>
+          <thead>
+            <tr>
+              <th style={{ border: "none" }}></th>
+              <th>Name</th>
+              <th>Part #</th>
+              <th>Unit</th>
+              <th>Quantity</th>
+              <th>Unit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map(item => {
+              return (
+                <tr>
+                  <td style={{ border: "none", color: "red", backgroundColor: "white" }}>
+                    <span
+                      onClick={() => {
+                        clearCart(item.product.msa_id);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      x
+                    </span>
+                  </td>
+                  <td className="item-name">
+                    {item.product.name}
+                  </td>
+                  <td>
+                    {item.product.msa_id}{item.package_type === "big" && "B"}
+                  </td>
+                  <td>
+                    {
+                      item.package_type === "individual"
+                        ? `individual units (${item.product.unit_type})`
+                        : item.package_type === "small"
+                          ? `small package (${item.product.package_size} ${item.product.unit_type})`
+                          : `big package (${item.product.big_package_size} ${item.product.unit_type})`
+                    }
+                  </td>
+                  <td>
+                    {item.amount}
+                  </td>
+                  <td>
+                    {item.product.unit_type}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <img 
+          style={{ marginLeft: "5px"}}
+          className="close-icon"
+          src={closeIcon} 
+          alt={"close modal"}
+          onClick={() => onBlur()}
+        />
+      </div>
       <div className="action-wrapper">
         <button
           className="cart-action clear"
@@ -141,9 +135,9 @@ const CartModal = ({ onBlur }: CartModalProps) => {
         >
           Clear Cart
         </button>
-        <button 
+        <button
           className="cart-action gen"
-          disabled={!cart || (Object.values(cart).length <= 0 && items.length <= 0) || (items.length != Object.values(cart).length) }
+          disabled={!cart || (Object.values(cart).length <= 0 && items.length <= 0) || (items.length != Object.values(cart).length)}
           onClick={async () => {
             setLoading(true);
             const token = localStorage.getItem("token");
@@ -156,7 +150,7 @@ const CartModal = ({ onBlur }: CartModalProps) => {
 
             clearCart();
             setLoading(false);
-            navigate("../invoice", { state: { invoice_id: res.data.invoice_id }});
+            navigate("../invoice", { state: { invoice_id: res.data.invoice_id } });
           }}
         >
           Generate Invoice

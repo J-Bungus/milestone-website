@@ -9,6 +9,7 @@ const logo = require("../assets/imgs/invoice-logo.png");
 const Header = () => {
   const [token, setToken] = useGlobal("token");
   const [userInfo, setUserInfo] = useGlobal("userInfo");
+  const [loading, setLoading] = useGlobal("loading");
   const [openCartModal, setOpenCartModal] = useState(false);
   const navigate = useNavigate();
 
@@ -61,6 +62,7 @@ const Header = () => {
                 <button className="cart-button"
                   onClick={() => {
                     setOpenCartModal(!openCartModal);
+                    setLoading(!openCartModal);
                   }}
                 >
                   <img className="cart-img" src={cart}/>
@@ -86,7 +88,7 @@ const Header = () => {
         {
           openCartModal && 
           <CartModal
-            onBlur={() => setOpenCartModal(false) }
+            onBlur={() => {setOpenCartModal(false); setLoading(false); } }
           />
         }
       </div>

@@ -28,10 +28,10 @@ const ProductCard = ({ product, cart = {}, setCart }: ProductCardProps) => {
         </div>
         <img className="product-image" src={`${process.env.REACT_APP_GCP_BUCKET_URL}/${product.images[0]}`} alt={product.name}/>
       </div>
-      <div className="part-number">{product.msa_id}</div>
+      <div className="part-number"><strong>Part #: </strong>{product.msa_id}</div>
       <div className="product-name">{product.name}</div>
       <AddItemButton cart={cart} setCart={setCart} product={product} />
-      <div>
+      <div className="package-selection">
         <label htmlFor="package">
           Package Type:
         </label>
