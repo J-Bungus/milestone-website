@@ -6,7 +6,7 @@ import AddItemButton from "./AddItemButton";
 import { ProductCardProps } from "../types";
 import "../assets/styles/ProductCard.css";
 
-const ProductCard = ({ product, cart = {}, setCart }: ProductCardProps) => {
+const ProductCard = ({ product, breadCrumbPath, cart = {}, setCart }: ProductCardProps) => {
   const navigate = useNavigate();
 
   return (
@@ -15,7 +15,7 @@ const ProductCard = ({ product, cart = {}, setCart }: ProductCardProps) => {
         <div className="product-overlay">
           <button 
             className="detailed-view"
-            onClick={() => navigate(`/products/specific/${product.msa_id}`, { state: { product: product } })}
+            onClick={() => navigate(`/product-details/${product.msa_id}`, { state: { product: product, breadCrumbPath: breadCrumbPath } })}
           >
             Detailed View
           </button>

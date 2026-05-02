@@ -172,6 +172,7 @@ const CategoryProducts = () => {
                 <ProductCard
                   key={product.id || product.msa_id}
                   product={product}
+                  breadCrumbPath={[]}
                   cart={cart}
                   setCart={setCart}
                 />

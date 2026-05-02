@@ -43,7 +43,7 @@ const Header = () => {
     <>
       <div className="header-wrapper">
         <img className="logo" src={logo} alt="Milestone Autosupplies Inc Logo"/>
-          <span style={{ fontSize: "32px" }}> <b>Milestone Autosupplies Inc.</b></span>
+          <span style={{ fontSize: "50px", wordSpacing: "10px" }}> <b>Milestone Autosupplies Inc.</b></span>
           <nav>
                 <ul>
                   { userInfo.is_admin && 

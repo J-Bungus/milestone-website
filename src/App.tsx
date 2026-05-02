@@ -16,6 +16,7 @@ import './App.css';
 import ForgotPassword from './pages/user/ForgotPassword';
 import ResetPassword from './pages/user/ResetPassword';
 import Contacts from './pages/user/Contacts';
+import Home from './pages/user/Home';
 
 function App() {  
   return (
@@ -23,7 +24,7 @@ function App() {
       <Loader/>
       <Routes>
         <Route path="/" element={<Header/>}>
-          <Route index element={<Navigate to="/products" replace />}/>
+          <Route index element={<Home/>}/>
           <Route path="/admin-login" element={<Login/>}/>
           <Route path="/forgot-password" element={<ForgotPassword/>}/>
           <Route path="/reset-password" element={<ResetPassword/>}/> 
@@ -49,13 +50,14 @@ function App() {
             element={<Account/>}
           /> */}
           <Route
-            path="/products/specific/:msa_id"
+            path="/product-details/:msa_id"
             element={<SpecificProduct/>}
           />
           <Route
             path="/contacts"
             element={<Contacts/>}
           />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

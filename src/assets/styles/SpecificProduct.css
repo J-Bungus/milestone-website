@@ -43,6 +43,7 @@
 .package-types {
   margin-left: 20px;
   margin-bottom: 15px;
+  margin-top: 15px;
 }
 
 .package-types span {
@@ -83,7 +84,7 @@
 }
 
 .image-gallery-image {
-  max-height: calc(90vh - 80px) !important;
+  max-height: 55vh !important;
   background-size: cover;
 }
 

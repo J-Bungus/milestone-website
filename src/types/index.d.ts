@@ -63,6 +63,7 @@ export interface AddItemButtonProps {
 
 export interface ProductCardProps {
   product: Product,
+  breadCrumbPath: Array<{name: string, urlPath: string}>,
   cart: Cart,
   setCart: (cart: Cart) => void
 }

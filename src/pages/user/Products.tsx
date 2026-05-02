@@ -140,7 +140,7 @@ const Products = () => {
       controller.abort();
     };
   }, [page, itemsPerPage, searchTerm, currentCategory, categories]);
-  
+
   // Error State: URL has a category, but it doesn't exist in our tree
   if (categories && !currentCategory && categoryTrees.length > 0) {
     return <div style={{ padding: '20px' }}>Category not found.</div>;
@@ -157,7 +157,7 @@ const Products = () => {
         <div className="category-path" style={{ width: '100%', marginBottom: '20px', padding: '0 20px' }}>
           <nav>
             <Link to="/products" style={{ fontWeight: 'bold', color: currentCategory ? '#333' : 'rgb(0, 206, 0)' }}> 
-              Home 
+              All Products 
             </Link>
             {breadCrumbPath.map((crumb, i) => {
               const isLast = i === breadCrumbPath.length - 1;
@@ -230,6 +230,7 @@ const Products = () => {
                 <ProductCard
                   key={product.id || product.msa_id}
                   product={product}
+                  breadCrumbPath={breadCrumbPath}
                   cart={cart}
                   setCart={setCart}
                 />

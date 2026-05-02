@@ -38,10 +38,10 @@ const Sidebar: React.FC<SidebarProps> = ({ categoryTrees, navigate }) => {
   };
 
   // The hover-wrapper for the top-level sidebar items
-  const SidebarCategoryItem = ({ category }: { category: CategoryTree }) => {
+  const SidebarCategoryItem = ({ category, isAllProducts }: { category: CategoryTree; isAllProducts: boolean }) => {
     const [isOpen, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
-    const linkPath = `/products/${category.id}-${category.name}`;
+    const linkPath = isAllProducts ? "/products" : `/products/${category.id}-${category.name}`;
 
     return (
       <div
@@ -96,8 +96,9 @@ const Sidebar: React.FC<SidebarProps> = ({ categoryTrees, navigate }) => {
       <div className="sidebar-section">
         <h3 className="sidebar-subtitle">Categories</h3>
         <div className="sidebar-categories">
+          <SidebarCategoryItem category={{ id: 0, name: "All Products", parent_id: null, is_leaf: false, order_index: 0, path: null, children: [] }} isAllProducts={true} />
           {categoryTrees.map(option => (
-            <SidebarCategoryItem key={option.id} category={option} />
+            <SidebarCategoryItem key={option.id} category={option} isAllProducts={false} />
           ))}
         </div>
       </div>
