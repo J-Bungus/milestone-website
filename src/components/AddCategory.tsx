@@ -27,6 +27,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({
   const [name, setName] = useState<string>('');
   const [parentId, setParentId] = useState<string>('');
   const [isLeaf, setIsLeaf] = useState<boolean>(false);
+  const [orderIndex, setOrderIndex] = useState<string>(''); // NEW: State for Order Index
   const [statusMessage, setStatusMessage] = useState<string>('');
 
   // --- Product Multi-Select State ---
@@ -64,7 +65,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({
           setDropdownCategories(flatList);
         }
 
-        // Fetch Default Products (so the menu isn't empty on first click)
+        // Fetch Default Products
         const prodRes = await axios.get(`${process.env.REACT_APP_API}/products/all?page=0&itemsPerPage=50`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -86,45 +87,43 @@ const AddCategory: React.FC<AddCategoryProps> = ({
     if (editCategory) {
       setName(editCategory.name);
       setParentId(editCategory.parent_id ? String(editCategory.parent_id) : '');
-      setIsLeaf(editCategory.is_leaf === 'true');
+      setIsLeaf(editCategory.is_leaf === 'true' || editCategory.is_leaf === true);
       
-      // If it's a leaf category, fetch the products assigned to it!
+      // NEW: Set order index if it exists, otherwise leave blank
+      setOrderIndex(editCategory.order_index !== null && editCategory.order_index !== undefined ? String(editCategory.order_index) : ''); 
+      
       if (editCategory.is_leaf === 'true' || editCategory.is_leaf === true) {
         const fetchExistingProducts = async () => {
           try {
             const token = localStorage.getItem("token");
-            
-            // NOTE: Make sure this URL matches your actual endpoint for fetching products by category!
             const res = await axios.get(`${process.env.REACT_APP_API}/products/all/category/${editCategory.id}`, {
               headers: { Authorization: `Bearer ${token}` }
             });
             
-            // Populate the pills with the fetched products
             if (res.data && res.data.products) {
-              console.log(res.data.products);
               setSelectedProducts(res.data.products);
             }
           } catch (error) {
             console.error("Failed to load existing products:", error);
           }
         };
-        
         fetchExistingProducts();
       }
     } else {
-      // Reset form if we are just adding a new category
+      // Reset form if adding a new category
       setName('');
       setParentId('');
       setIsLeaf(false);
+      setOrderIndex(''); // NEW: Reset order index
       setSelectedProducts([]);
     }
   }, [editCategory]);
 
-  // 3. Handle Live Search (only triggers if they actually type something)
+  // 3. Handle Live Search
   useEffect(() => {
     const searchApi = async () => {
       if (productSearch.length < 2) {
-        setSearchResults([]); // Revert to default list if search is empty
+        setSearchResults([]); 
         return;
       }
       try {
@@ -142,7 +141,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({
     return () => clearTimeout(timeoutId);
   }, [productSearch]);
 
-  // 4. Close dropdown when clicking outside of it
+  // 4. Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (multiSelectRef.current && !multiSelectRef.current.contains(event.target as Node)) {
@@ -161,8 +160,8 @@ const AddCategory: React.FC<AddCategoryProps> = ({
 
   const handleAddProduct = (product: Product) => {
     setSelectedProducts([...selectedProducts, product]);
-    setProductSearch(''); // Clear search so they can type the next one
-    searchInputRef.current?.focus(); // Keep focus on input
+    setProductSearch('');
+    searchInputRef.current?.focus();
   };
 
   const handleRemoveProduct = (productId: number | undefined) => {
@@ -178,15 +177,18 @@ const AddCategory: React.FC<AddCategoryProps> = ({
       const token = localStorage.getItem("token");
       let categoryId = null;
 
+      // NEW: Parse the order index properly (handles empty strings as null)
+      const parsedOrderIndex = orderIndex === '' ? 0 : Number(orderIndex);
+
       // 1. ADD OR UPDATE THE CATEGORY
       if (editCategory) {
-        // The PATCH /update endpoint expects everything inside the 'category' object
         const updatePayload = {
           category: {
             id: editCategory.id,
             name: name,
             is_leaf: isLeaf ? 'true' : 'false',
-            parent_id: parentId === '' ? null : parseInt(parentId, 10)
+            parent_id: parentId === '' ? null : parseInt(parentId, 10),
+            order_index: parsedOrderIndex // NEW: Added to update payload
           }
         };
 
@@ -196,11 +198,11 @@ const AddCategory: React.FC<AddCategoryProps> = ({
         
         categoryId = editCategory.id;
       } else {
-        // The POST /add endpoint expects 'category' and 'parent_id' separated
         const addPayload = {
           category: {
             name: name,
-            is_leaf: isLeaf ? 'true' : 'false'
+            is_leaf: isLeaf ? 'true' : 'false',
+            order_index: parsedOrderIndex // NEW: Added to add payload
           },
           parent_id: parentId === '' ? null : parseInt(parentId, 10)
         };
@@ -209,12 +211,10 @@ const AddCategory: React.FC<AddCategoryProps> = ({
           headers: { Authorization: `Bearer ${token}` }
         });
         
-        // Grab the newly created ID from the response so we can attach products to it
         categoryId = res.data.category_id;
       }
 
-      // 2. ASSIGN PRODUCTS (If applicable)
-      // Removed the length > 0 check so it sends empty arrays to the backend!
+      // 2. ASSIGN PRODUCTS
       if (isLeaf && categoryId) {
         const productIds = selectedProducts.map(p => p.id);
         
@@ -229,14 +229,15 @@ const AddCategory: React.FC<AddCategoryProps> = ({
       }
 
       setStatusMessage('Category saved successfully!');
-      await fetchUpdate(); // Refresh the table
-      closeModal();        // Close the UI
+      await fetchUpdate(); 
+      closeModal();        
       
     } catch (error) {
       console.error("Failed to save category:", error);
       setStatusMessage('Error saving category. Please try again.');
     }
   };
+
   return (
     <div className="modal-overlay" onClick={closeModal}>
       <div className="add-category-modal" onClick={(e) => e.stopPropagation()}>
@@ -279,6 +280,18 @@ const AddCategory: React.FC<AddCategoryProps> = ({
             </select>
           </div>
 
+          {/* NEW: Input field for Order Index */}
+          <div className="form-group">
+            <label htmlFor="orderIndex">Order Index (Optional)</label>
+            <input 
+              id="orderIndex" 
+              type="number" 
+              value={orderIndex} 
+              onChange={(e) => setOrderIndex(e.target.value)} 
+              placeholder="e.g. 1"
+            />
+          </div>
+
           <div className="checkbox-group">
             <input 
               id="isLeaf" 
@@ -295,7 +308,6 @@ const AddCategory: React.FC<AddCategoryProps> = ({
               <label>Assign Products</label>
               
               <div className="multi-select-wrapper">
-                {/* The Clickable Box */}
                 <div 
                   className="multi-select-box" 
                   onClick={() => {
@@ -303,7 +315,6 @@ const AddCategory: React.FC<AddCategoryProps> = ({
                     searchInputRef.current?.focus();
                   }}
                 >
-                  {/* Render the selected product pills */}
                   {selectedProducts.map(product => (
                     <div key={product.id} className="multi-select-pill">
                       {product.msa_id}
@@ -319,7 +330,6 @@ const AddCategory: React.FC<AddCategoryProps> = ({
                     </div>
                   ))}
 
-                  {/* The hidden/inline search input */}
                   <input 
                     ref={searchInputRef}
                     type="text" 
@@ -332,11 +342,9 @@ const AddCategory: React.FC<AddCategoryProps> = ({
                     }}
                   />
                   
-                  {/* The Dropdown Arrow Indicator */}
                   <span className="multi-select-arrow">▼</span>
                 </div>
 
-                {/* The Floating Menu */}
                 {isDropdownOpen && (
                   <ul className="multi-select-menu">
                     {availableOptions.length > 0 ? (

@@ -50,12 +50,13 @@ const Categories = () => {
             + New Category
           </button>
           {
-            categoryTree.map(category => 
+            categoryTree.map((category, i) => 
               <CategoryItem 
                 category={category} 
                 key={category.id} 
                 setEditCategory={setEditCategory} 
                 fetchUpdate={fetchCategories}
+                order={category.order_index}
               />)
           }
         </div>

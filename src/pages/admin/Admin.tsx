@@ -6,6 +6,7 @@ import ClientRegistrationForm from "../../components/ClientRegistrationForm";
 import AddProductForm from "../../components/AddProductForm";
 import Categories from "./Categories";
 import "../../assets/styles/Admin.css";
+import UpdateProductForm from "../../components/UpdateProductForm";
 
 const Admin = () => {
   const [value, setValue] = useState<number>(0);
@@ -15,11 +16,13 @@ const Admin = () => {
       <Tabs value={value} onChange={(event: any, newValue: number) => setValue(newValue)}>
         {/*<Tab label="Register Client"/>*/}
         <Tab label="Add Product"/>
+        <Tab label="Update Product"/>
         <Tab label="Build Categories"/>
       </Tabs>
       {/*value === 0 && <ClientRegistrationForm/>*/}
       {value === 0 && <AddProductForm/>}
-      {value === 1 && <Categories/>}
+      {value === 1 && <UpdateProductForm/>}
+      {value === 2 && <Categories/>}
     </div>
   );
 };

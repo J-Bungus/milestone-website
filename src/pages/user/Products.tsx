@@ -156,8 +156,8 @@ const Products = () => {
         {/* Breadcrumbs - Now visible on the default page too! */}
         <div className="category-path" style={{ width: '100%', marginBottom: '20px', padding: '0 20px' }}>
           <nav>
-            <Link to="/products" style={{ fontWeight: 'bold', color: currentCategory ? '#333' : 'rgb(0, 206, 0)' }}> 
-              All Products 
+            <Link to="/" style={{ fontWeight: 'bold', color: currentCategory ? '#333' : 'rgb(0, 206, 0)' }}> 
+              Home 
             </Link>
             {breadCrumbPath.map((crumb, i) => {
               const isLast = i === breadCrumbPath.length - 1;

@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { CategoryItemProps } from "../types";
 
-const CategoryItem = ({ category, setEditCategory, fetchUpdate }: CategoryItemProps) => {
+const CategoryItem = ({ category, setEditCategory, fetchUpdate, order }: CategoryItemProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [loading, setLoading] = useGlobal("loading");
   const toggleExpand = () => {
@@ -26,7 +26,7 @@ const CategoryItem = ({ category, setEditCategory, fetchUpdate }: CategoryItemPr
           </span>
         )}
 
-        <span>{category.name} </span>
+        <span>{Number(order)}. {category.name} </span>
         <span onClick={() => setEditCategory(category) } style={{padding: "0px 20px"}}>
           <FaRegEdit/>
         </span>
@@ -51,7 +51,7 @@ const CategoryItem = ({ category, setEditCategory, fetchUpdate }: CategoryItemPr
           className="category-children"
         >
           {category.children && category.children.map((child, i) => (
-            <CategoryItem key={child.id} category={child} setEditCategory={setEditCategory} fetchUpdate={fetchUpdate} />
+              <CategoryItem key={child.id} category={child} setEditCategory={setEditCategory} fetchUpdate={fetchUpdate} order={child.order_index} />
           ))}
         </div>
       )}

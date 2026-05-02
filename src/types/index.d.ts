@@ -14,7 +14,8 @@ export interface Product {
   package_size: number,
   big_package_size: number,
   images: Array<string>,
-  categories: Array<string>
+  categories: Array<string>,
+  category_ids?: Array<number>
 }
 
 export interface UserInfo {
@@ -103,7 +104,8 @@ export interface CategoryTree {
 export interface CategoryItemProps {
   category: CategoryTree,
   setEditCategory: (category: Category | null) => void,
-  fetchUpdate: () => Promise<void>
+  fetchUpdate: () => Promise<void>,
+  order: number
 }
 
 export interface AddCategoryProps {

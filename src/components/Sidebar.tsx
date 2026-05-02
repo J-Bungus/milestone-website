@@ -28,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ categoryTrees, navigate }) => {
     return (
       <SubMenu
         key={category.id}
-        label={<span onClick={() => navigate(linkPath)}>{category.name}</span>}
+        label={<span onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>{category.name}</span>}
         direction="right"
         align="start"
       >
@@ -38,19 +38,19 @@ const Sidebar: React.FC<SidebarProps> = ({ categoryTrees, navigate }) => {
   };
 
   // The hover-wrapper for the top-level sidebar items
-  const SidebarCategoryItem = ({ category, isAllProducts }: { category: CategoryTree; isAllProducts: boolean }) => {
+  const SidebarCategoryItem = ({ category }: { category: CategoryTree }) => {
     const [isOpen, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
-    const linkPath = isAllProducts ? "/products" : `/products/${category.id}-${category.name}`;
 
     return (
       <div
         ref={ref}
+        onClick={(e) => {e.stopPropagation(); setOpen(true)}}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         className="sidebar-item-wrapper"
       >
-        <button className="sidebar-link" onClick={() => navigate(linkPath)}>
+        <button className="sidebar-link" >
           <span>{category.name}</span>
           {/* The Chevron icon on the right side */}
           {category.children && category.children.length > 0 && (
@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ categoryTrees, navigate }) => {
             anchorRef={ref}
             direction="right" // <-- Opens the menu to the right of the sidebar
             align="start"     // <-- Aligns it with the top of the hovered button
-            onClose={() => setOpen(false)}
+            onClose={() => {setOpen(false);}}
             portal={true} // <-- Renders the menu in a portal to avoid overflow issues
           >
             {category.children.map((child) =>
@@ -96,9 +96,8 @@ const Sidebar: React.FC<SidebarProps> = ({ categoryTrees, navigate }) => {
       <div className="sidebar-section">
         <h3 className="sidebar-subtitle">Categories</h3>
         <div className="sidebar-categories">
-          <SidebarCategoryItem category={{ id: 0, name: "All Products", parent_id: null, is_leaf: false, order_index: 0, path: null, children: [] }} isAllProducts={true} />
           {categoryTrees.map(option => (
-            <SidebarCategoryItem key={option.id} category={option} isAllProducts={false} />
+            <SidebarCategoryItem key={option.id} category={option} />
           ))}
         </div>
       </div>

@@ -168,6 +168,20 @@ const AddProductForm = () => {
                     isMulti
                     onChange={options => setProduct({...product, categories: options.map(option => option.value ) as any})}
                     options={categoryOptions.map(category => ({ value: String(category.id), label: category.path || category.name }))}
+                    styles={{
+                      // 1. Allows the text inside the pill to wrap to multiple lines
+                      multiValueLabel: (base) => ({
+                        ...base,
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
+                      }),
+                      // 2. Ensures the pill itself doesn't try to grow wider than the main box
+                      multiValue: (base) => ({
+                        ...base,
+                        maxWidth: '100%',
+                        height: 'auto',
+                      })
+                    }}
                   />
                 </div>
               </div>

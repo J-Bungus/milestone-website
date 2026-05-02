@@ -48,13 +48,18 @@ const Header = () => {
                 <ul>
                   { userInfo.is_admin && 
                     <li>
+                      <Link to="/">
+                        Home
+                      </Link>
+                    </li>
+                  }
+                  { userInfo.is_admin && 
+                    <li>
                       <Link to="/admin">
                         Admin
                       </Link>
-                    </li>}
-                  <li>
-                    <Link to="/products">Products</Link>
-                  </li>
+                    </li>
+                  }
                   </ul>
                   {/*<li>
                     <Link to="/account">Account</Link>
@@ -67,16 +72,18 @@ const Header = () => {
                   }}
                 >
                   <img className="cart-img" src={cart}/>
-                </button>
-                <button className="logout-btn"
-                  onClick={() => {
-                    localStorage.clear();
-                    logout();
-                    navigate("../");
-                  }}
-                >
-                  Log-out
                 </button>*/}
+                {userInfo.is_admin && 
+                  <button className="logout-btn"
+                    onClick={() => {
+                      localStorage.clear();
+                      logout();
+                      navigate("../");
+                    }}
+                  >
+                    Log-out
+                  </button>
+                }
               </nav>
         {/*
           openCartModal && 
