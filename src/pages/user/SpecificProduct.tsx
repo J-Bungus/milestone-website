@@ -123,8 +123,8 @@ const SpecificProduct = () => {
     <div>
       <div className="category-path" style={{ width: '100%', marginBottom: '20px', padding: '20px 40px 0 40px' }}>
         <nav>
-          <Link to="/products" style={{ fontWeight: 'bold', color: '#333' }}> 
-            All Products 
+          <Link to="/" style={{ fontWeight: 'bold', color: '#333' }}> 
+            Home 
           </Link>
           {breadCrumbPath.map((crumb: {name: string, urlPath: string}, i: number) => {
             return (
