@@ -1,6 +1,5 @@
 import React, { useState, setGlobal, useDispatch } from "reactn";
 import { useNavigate } from "react-router-dom";
-import Footer from "../../components/Footer";
 import "../../assets/styles/Login.css";
 import { Link } from "react-router-dom";
 import axios, {AxiosError} from "axios";
@@ -34,23 +33,12 @@ const Login = () => {
       console.log("HELLO?");
       const res = await axios.post(endpoint, { username, password });
       console.log(res);
-      if (res.data.requireVerification) {
-        localStorage.setItem("unverifiedToken", res.data.accessToken);
-        localStorage.setItem("newIP", res.data.loginIP);
-        navigate("/verify-login");
-      } else if (res.data.user.is_admin) {
-        setUserAccess({
-          userInfo: res.data.user,
-          token: res.data.accessToken
-        });
-        navigate("/admin");
-      } else {
-        setUserAccess({
-          userInfo: res.data.user,
-          token: res.data.accessToken
-        });
-        navigate("/products");
-      }
+      setUserAccess({
+        userInfo: res.data.user,
+        token: res.data.accessToken
+      });
+      navigate("/admin");
+    
     } catch (error) {
       console.error(error);
       if (error instanceof AxiosError) {
@@ -66,8 +54,8 @@ const Login = () => {
     <>
     <div className="login-wrapper">
       <div className="login-modal">
-        <div className="login-title">Customer Login</div>
-        <div className="login-description">Login to view products with an existing account.</div>
+        <div className="login-title">Admin Login</div>
+        <div className="login-description">This is for Milestone Autosupplies Employees Only.</div>
         <div className="login-inputs">
           <div>Username</div>
           <input
@@ -109,7 +97,6 @@ const Login = () => {
           Login
         </button>
       </div>
-      <Footer/>
     </div>
     </>
   );

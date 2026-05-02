@@ -1,213 +1,251 @@
 import React, { useState, useEffect, useGlobal, useRef } from "reactn";
-import { Link } from "react-router-dom";
 import axios from "axios";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
-import { FaBars } from "react-icons/fa";
-import { TreeItem, TreeView } from "@material-ui/lab";
-import { ExpandMore, ChevronRight } from "@material-ui/icons";
-import { Product, Item, Cart, CategoryTree } from "../../types";
 import ProductCard from "../../components/ProductCard";
+import Sidebar from "../../components/Sidebar";
 import "../../assets/styles/Products.css";
-import { makeStyles } from "@material-ui/core";
-
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-  }
-});
+import { CategoryTree, Product } from "../../types";
+import "../../assets/styles/Products.css";
+import '@szhsin/react-menu/dist/index.css';
+import '@szhsin/react-menu/dist/transitions/slide.css';
 
 const Products = () => {
+  // Grab the wildcard from the URL to determine if we are in a category
+  const { "*": categories } = useParams();
+  
+  const [categoryTrees, setCategoryTrees] = useState<Array<CategoryTree>>([]);
+  const [currentCategory, setCurrentCategory] = useState<CategoryTree | null>(null);
+  
+  // Storing breadcrumbs as an object makes building the Links much cleaner
+  const [breadCrumbPath, setBreadCrumbPath] = useState<Array<{name: string, urlPath: string}>>([]);
+  
   const [page, setPage] = useState<number>(0);
-  const [itemsPerPage, setItemPerPage] = useState<number>(20);
+  const [itemsPerPage, setItemPerPage] = useState<number>(40); 
+  const [totalProducts, setTotalProducts] = useState<number>(0);
+  
   const [products, setProducts] = useState<Array<Product>>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [totalProducts, setTotalProducts] = useState<number>(0);
-  const [openMenu, setOpenMenu] = useState<boolean>(false);
-  const [menu, setMenu] = useState<Array<CategoryTree>>([]);
 
-  const [cart, setCart] = useGlobal("cart");
   const searchRef = useRef<HTMLInputElement>(null);
+  const [cart, setCart] = useGlobal("cart");
+  const navigate = useNavigate();
 
-  const classes = useStyles();
-
+  // 1. Reset page and search term when navigating between categories
   useEffect(() => {
-    const fetchInitalData = async (token: string) => {
-      const endpoint = `${process.env.REACT_APP_API}/products/all?page=${page}&itemsPerPage=${itemsPerPage}`;
-      try {
-        const result = await axios.get(endpoint, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setProducts(result.data.products);
-        setTotalProducts(result.data.totalProducts);
-      } catch (error) {
-        return <div>UNAUTHORIZED</div>;
-      }
-    }
+    setPage(0);
+    setSearchTerm("");
+    if (searchRef.current) searchRef.current.value = "";
+  }, [categories]);
 
-    const fetchProducts = async (token: string) => {
-      const endpoint = `${process.env.REACT_APP_API}/products/search?page=${page}&itemsPerPage=${itemsPerPage}&searchTerm=${searchTerm}`;
-      try {
-        const res = await axios.get(endpoint, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        if (res.data.products) {
-          setProducts(res.data.products);
-          setTotalProducts(res.data.totalProducts);
-        }
-        else {
-          setProducts([]);
-          setTotalProducts(0);
-        }
-      } catch (error) {
-        console.error(error);
-        return <div>UNAUTHORZED</div>;
-      }
-    }
-
-    const token = localStorage.getItem("token");
-    if (searchTerm && token)
-      fetchProducts(token);
-    else if (token)
-      fetchInitalData(token);
-
-  }, [page, itemsPerPage, searchTerm]);
-
+  // 2. Fetch the Sidebar Category Tree (Runs once)
   useEffect(() => {
-    const fetchUserCart = async (token: string) => {
-      const cartData = await axios.get(`${process.env.REACT_APP_API}/cart/fetch`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      const newCart: Cart = {};
-      if (cartData.data.cart) {
-        cartData.data.cart.items.map((item: Item) => {
-          newCart[item.product.msa_id] = item;
-        });
-        setCart(newCart);
+    const fetchCategories = async () => {
+      try {
+        const endpoint = `${process.env.REACT_APP_API}/category/fetch/all`;
+        const res = await axios.get(endpoint);
+        setCategoryTrees(res.data.categoryTree);
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
       }
-    }
-
-    const fetchCategories = async (token: string) => {
-      const endpoint = `${process.env.REACT_APP_API}/category/fetch/all`;
-      const res = await axios.get(endpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      setMenu(res.data.categoryTree);
-    }
-
-    const token = localStorage.getItem("token");
-    if (token) {
-      fetchUserCart(token);
-      fetchCategories(token);
-    }
+    };
+    fetchCategories();
   }, []);
 
-  const renderMenuItem = (category: CategoryTree, path: string): JSX.Element => {
-    if (!category.children || category.children.length === 0) {
-      return (
-        <Link to={`/products/category/${path.replace(/\s/g,"")}${category.id}-${category.name}`} >
-          <TreeItem nodeId={String(category.id)} label={category.name} />
-        </Link>
-      );
+  // 3. Resolve Current Category & Build Breadcrumbs
+  useEffect(() => {
+    // If there are no categories in the URL, we are on the default page!
+    if (!categories) {
+      setCurrentCategory(null);
+      setBreadCrumbPath([]);
+      return;
     }
 
-    return (
-      <TreeItem nodeId={String(category.id)} label={category.name}>
-        {category.children.map(child => renderMenuItem(child, path + `${category.id}-${category.name}/`))}
-      </TreeItem>
-    );
-  };
+    if (categoryTrees.length === 0) return;
+
+    const categoryPathList = categories.split("/");
+    let categoryLayer = categoryTrees;
+    let currCategory: CategoryTree | null = null;
+    const path: Array<{name: string, urlPath: string}> = [];
+    let currentUrlPath = "";
+
+    for (const catChunk of categoryPathList) {
+      const decodedChunk = decodeURIComponent(catChunk);
+      const [idStr] = decodedChunk.split("-");
+      const id = parseInt(idStr);
+      
+      const categoryNode = categoryLayer.find(cat => cat.id === id);
+      if (!categoryNode) break;
+
+      currentUrlPath += `${currentUrlPath ? "/" : ""}${catChunk}`;
+      path.push({ name: categoryNode.name, urlPath: currentUrlPath });
+      currCategory = categoryNode;
+      
+      if (categoryNode.children) {
+        categoryLayer = categoryNode.children;
+      }
+    }
+
+    setCurrentCategory(currCategory);
+    setBreadCrumbPath(path);
+  }, [categories, categoryTrees]);
+
+  // 4. Fetch Products based on Context (Category vs Global)
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        let endpoint = "";
+        
+        if (currentCategory) {
+          endpoint = `${process.env.REACT_APP_API}/products/search-in-category?page=${page}&itemsPerPage=${itemsPerPage}&category_id=${currentCategory.id}&searchTerm=${searchTerm}`;
+        } else {
+          if (searchTerm) {
+            endpoint = `${process.env.REACT_APP_API}/products/search?page=${page}&itemsPerPage=${itemsPerPage}&searchTerm=${searchTerm}`;
+          } else {
+            endpoint = `${process.env.REACT_APP_API}/products/all?page=${page}&itemsPerPage=${itemsPerPage}`;
+          }
+        }
+
+        const res = await axios.get(endpoint);
+        // Add fallbacks just in case the API returns null
+        console.log(res.data.products);
+        setProducts(res.data.products || []);
+        setTotalProducts(res.data.totalProducts || 0);
+      } catch (error) {
+        console.error("Failed to fetch products", error);
+        setProducts([]);
+        setTotalProducts(0);
+      }
+    };
+
+    // Prevent fetching if we are on a category URL but the category hasn't loaded yet
+    if (categories && !currentCategory) return;
+    
+    fetchProducts();
+  }, [page, itemsPerPage, searchTerm, currentCategory, categories]);
+
+  // Error State: URL has a category, but it doesn't exist in our tree
+  if (categories && !currentCategory && categoryTrees.length > 0) {
+    return <div style={{ padding: '20px' }}>Category not found.</div>;
+  }
 
   return (
-    <>
-      <div className="products-page">
-        <div className="search-wrapper">
-          <input
-            ref={searchRef}
-            className="search"
-            placeholder="Search by part number or name"
-            type="text"
-            onChange={e => {
-              if (e.target.value === "") {
-                setSearchTerm("");
-              }
-            }}
-            onKeyDown={e => {
-              if (e.key === "Enter" && searchRef.current) {
-                setSearchTerm(searchRef.current.value);
-              }
-            }}
-          />
-          <button
-            className="search-button"
-            onClick={() => {
-              if (searchRef.current) {
-                setSearchTerm(searchRef.current.value);
-              } else {
-                setSearchTerm("");
-              }
-            }}
-          >
-            Search
-          </button>
+    <div className="products-layout-wrapper" style={{ display: 'flex', alignItems: 'flex-start', width: '100%' }}>
+      
+      <Sidebar categoryTrees={categoryTrees} navigate={navigate} />
+
+      <div className="products-page" style={{ flex: 1, minWidth: 0, marginLeft: 0, display: 'flex', flexDirection: 'column' }}>
+        
+        {/* Breadcrumbs - Now visible on the default page too! */}
+        <div className="category-path" style={{ width: '100%', marginBottom: '20px', padding: '0 20px' }}>
+          <nav>
+            <Link to="/products" style={{ fontWeight: 'bold', color: currentCategory ? '#333' : 'rgb(0, 206, 0)' }}> 
+              Home 
+            </Link>
+            {breadCrumbPath.map((crumb, i) => {
+              const isLast = i === breadCrumbPath.length - 1;
+              return (
+                <span key={i}>
+                  <span style={{ margin: '0 8px', color: '#888' }}>/</span>
+                  <Link 
+                    to={`/products/${crumb.urlPath}`} 
+                    style={{ 
+                      color: isLast ? 'rgb(0, 206, 0)' : '#333', 
+                      fontWeight: isLast ? 'bold' : 'normal' 
+                    }}
+                  > 
+                    {crumb.name} 
+                  </Link>
+                </span>
+              );
+            })}
+          </nav>
         </div>
 
-        <div className="menu-wrapper">
-          <div
-            className="menu-button"
-            onClick={() => setOpenMenu(!openMenu)}
-          >
-            <FaBars />
+        {/* Empty State / Coming Soon */}
+        {products.length === 0 && searchTerm === "" ? (
+          <div style={{
+            display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+            flex: 1, width: '100%', minHeight: '40vh', color: '#555', textAlign: 'center'
+          }}>
+            <h2 style={{ fontSize: '32px', marginBottom: '10px', color: '#333' }}>Coming Soon!</h2>
+            <p style={{ fontSize: '18px', color: '#888' }}>We are currently stocking products for this section.</p>
           </div>
-          {openMenu &&
-            <div className="menu">
-              <TreeView
-                className={classes.root}
-                defaultCollapseIcon={<ExpandMore />}
-                defaultExpandIcon={<ChevronRight />}
+        ) : (
+          <>
+            {/* Search Bar */}
+            <div className="search-wrapper">
+              <input
+                ref={searchRef}
+                className="search"
+                // Dynamically changes the placeholder text based on where they are!
+                placeholder={currentCategory ? `Search in ${currentCategory.name}...` : "Search all products..."}
+                type="text"
+                onChange={e => {
+                  if (e.target.value === "") setSearchTerm("");
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter" && searchRef.current) {
+                    setSearchTerm(searchRef.current.value);
+                    setPage(0); 
+                  }
+                }}
+              />
+              <button
+                type="button"
+                className="search-button"
+                onClick={() => {
+                  if (searchRef.current) {
+                    setSearchTerm(searchRef.current.value);
+                    setPage(0);
+                  } else {
+                    setSearchTerm("");
+                  }
+                }}
               >
-                {
-                  menu.map(option => renderMenuItem(option, ""))
-                }
-              </TreeView>
+                Search
+              </button>
             </div>
-          }
 
-        </div>
-        <div className="products-wrapper">
-          {products.map(product =>
-            <ProductCard
-              key={product.msa_id}
-              product={product}
-              cart={cart}
-              setCart={setCart}
-            />
-          )}
-        </div>
-        <div className="paginate-wrapper">
-          {console.log("total", totalProducts)}
-          <ReactPaginate
-            pageCount={Math.ceil(totalProducts / itemsPerPage) || 1}
-            pageRangeDisplayed={0}
-            marginPagesDisplayed={0}
-            onPageChange={e => {
-              console.log(e.selected);
-              setPage(e.selected);
-            }}
-          />
-        </div>
+            {/* Products Grid */}
+            <div className="products-wrapper">
+              {products.map(product => (
+                <ProductCard
+                  key={product.id || product.msa_id}
+                  product={product}
+                  cart={cart}
+                  setCart={setCart}
+                />
+              ))}
+              
+              {/* No Results from Search */}
+              {products.length === 0 && searchTerm !== "" && (
+                <div style={{ width: '100%', textAlign: 'center', padding: '40px', color: '#666', fontSize: '18px' }}>
+                  No products found matching "{searchTerm}".
+                </div>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {totalProducts > 0 && (
+              <div className="paginate-wrapper">
+                <ReactPaginate
+                  pageCount={Math.ceil(totalProducts / itemsPerPage) || 1}
+                  pageRangeDisplayed={1}
+                  marginPagesDisplayed={1}
+                  forcePage={page}
+                  onPageChange={e => {
+                    setPage(e.selected);
+                    window.scrollTo(0, 0); 
+                  }}
+                />
+              </div>
+            )}
+          </>
+        )}
+
       </div>
-    </>
+    </div>
   );
 };
 

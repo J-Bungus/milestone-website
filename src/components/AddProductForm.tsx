@@ -5,6 +5,7 @@ import { Switch } from "@material-ui/core";
 import Select from "react-select";
 
 import "../assets/styles/AddProductForm.css";
+import "../assets/styles/Account.css";
 import { LocalLaundryService } from "@material-ui/icons";
 
 const AddProductForm = () => {
@@ -13,8 +14,8 @@ const AddProductForm = () => {
     name: "",
     description: "",
     unit_price: 0,
-    unit_type: "",
-    has_package: false,
+    unit_type: "pcs", // <-- Hardcoded default
+    has_package: true, // <-- Turned ON by default
     has_big_package: false,
     package_price: 0,
     big_package_price: 0,
@@ -30,17 +31,16 @@ const AddProductForm = () => {
   const [loading, setLoading] = useGlobal("loading");
 
   type ProductKeys = Exclude<keyof Product, 'id'>
+  // REMOVED 'unit_type' and 'unit_price' from this array!
   const fields: Array<{ key: ProductKeys, text: string, required: boolean }> = [
     { key: "msa_id", text: "Part #", required: true },
     { key: "name", text: "Name", required: true },
     { key: "description", text: "Description", required: true },
-    { key: "unit_type", text: "Unit Type", required: true },
-    { key: "unit_price", text: `Price / ${product.unit_type !== "" ? product.unit_type : "unit"}`, required: true },
     { key: "has_package", text: "Has Package?", required: true },
-    { key: "package_size", text: `${product.unit_type !== "" ? product.unit_type : "Unit"}s / Package`, required: product.has_package },
+    { key: "package_size", text: "pcs / Package", required: product.has_package },
     { key: "package_price", text: "Package Price", required: product.has_package},
     { key: "has_big_package", text: "Has Big Package?", required: true },
-    { key: "big_package_size", text: `${product.unit_type !== "" ? product.unit_type : "Unit"}s / Big Package`, required: product.has_big_package },
+    { key: "big_package_size", text: "pcs / Big Package", required: product.has_big_package },
     { key: "big_package_price", text: "Big Package Price", required: product.has_big_package},
     { key: "images", text: "Gallery", required: true },
     { key: "categories", text: "Categories", required: false }
@@ -49,7 +49,7 @@ const AddProductForm = () => {
   useEffect(() => {
     const fetchCategories = async() => {
       const token = localStorage.getItem("token");
-      const endpoint = `${process.env.REACT_APP_API}/category/fetch/all/leaf`;
+      const endpoint = `${process.env.REACT_APP_API}/category/fetch/all/leaf-paths`;
       const res = await axios.get(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -72,7 +72,7 @@ const AddProductForm = () => {
                 <span>{field.text}</span>
                 <div className="switch-wrapper">
                   <Switch
-                    checked={product[field.key]}
+                    checked={product[field.key] as boolean}
                     onChange={() => {
                       if (field.key === "has_package" && product[field.key]) {
                         setProduct({
@@ -124,7 +124,7 @@ const AddProductForm = () => {
                   />
                 </div>
                 <div className="preview-section"> 
-                  { product.images.map((image, i) => {
+                  { (product.images as string[]).map((image, i) => {
                     return (
                       <div key={image + i} className="preview-wrapper">
                         <img className="preview-img" src={image} alt={files[i].name}/>
@@ -143,7 +143,7 @@ const AddProductForm = () => {
                 <textarea
                   id={field.key}
                   rows={3}
-                  value={product[field.key]}
+                  value={product[field.key] as string}
                   onChange={e => {
                     if (e.target.value !== "" && e.target.style.borderColor === "red") {
                       e.target.style.borderColor = "gray";
@@ -166,8 +166,8 @@ const AddProductForm = () => {
                 <div style={{ width: "100%"}}>
                   <Select
                     isMulti
-                    onChange={options => setProduct({...product, categories: options.map(option => option.value )})}
-                    options={categoryOptions.map(category => ({ value: String(category.id), label: category.name }))}
+                    onChange={options => setProduct({...product, categories: options.map(option => option.value ) as any})}
+                    options={categoryOptions.map(category => ({ value: String(category.id), label: category.path || category.name }))}
                   />
                 </div>
               </div>
@@ -180,7 +180,7 @@ const AddProductForm = () => {
               <input
                 type="text"
                 id={field.key}
-                value={product[field.key]}
+                value={product[field.key] as string | number}
                 onChange={e => {
                   if (e.target.value !== "" && e.target.style.borderColor === "red") {
                     e.target.style.borderColor = "gray";
@@ -240,13 +240,14 @@ const AddProductForm = () => {
                 }
               });
 
+              // Reset form with the new defaults
               setProduct({
                 msa_id: "",
                 name: "",
                 description: "",
                 unit_price: 0,
-                unit_type: "",
-                has_package: false,
+                unit_type: "pcs", // <-- Reset to pcs
+                has_package: true, // <-- Reset to true
                 has_big_package: false,
                 package_price: 0,
                 big_package_price: 0,
@@ -255,6 +256,7 @@ const AddProductForm = () => {
                 images: [],
                 categories: []
               });
+              setFiles([]); // Clear out the files state too!
               setShowInvalidText(false);
               setLoading(false);
             } catch(error) {

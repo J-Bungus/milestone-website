@@ -13,13 +13,13 @@ const Admin = () => {
   return (
     <div className="admin-wrapper">
       <Tabs value={value} onChange={(event: any, newValue: number) => setValue(newValue)}>
-        <Tab label="Register Client"/>
+        {/*<Tab label="Register Client"/>*/}
         <Tab label="Add Product"/>
         <Tab label="Build Categories"/>
       </Tabs>
-      {value === 0 && <ClientRegistrationForm/>}
-      {value === 1 && <AddProductForm/>}
-      {value === 2 && <Categories/>}
+      {/*value === 0 && <ClientRegistrationForm/>*/}
+      {value === 0 && <AddProductForm/>}
+      {value === 1 && <Categories/>}
     </div>
   );
 };

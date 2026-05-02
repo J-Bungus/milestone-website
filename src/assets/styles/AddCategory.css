@@ -1,0 +1,227 @@
+/* AddCategory.css */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.add-category-modal {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  font-family: Lato, sans-serif;
+  max-height: 90vh;
+  overflow-y: auto; 
+}
+
+.add-category-modal h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.form-group input[type="text"],
+.form-group select {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+.checkbox-group label {
+  font-size: 14px;
+  color: #555;
+  font-weight: normal;
+}
+
+.modal-button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.modal-cancel-btn {
+  padding: 10px 15px;
+  background-color: #f1f1f1;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.modal-cancel-btn:hover {
+  background-color: #e4e4e4;
+}
+
+.modal-submit-btn {
+  padding: 10px 15px;
+  background-color: rgb(0, 206, 0);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.modal-submit-btn:hover {
+  background-color: rgb(0, 150, 0);
+}
+
+.status-message {
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+.status-success { color: green; }
+.status-error { color: red; }
+
+/* --- Multi-Select Dropdown Styles --- */
+
+.multi-select-wrapper {
+  position: relative;
+  width: 100%;
+  /* Permanently reserves space for the dropdown so the modal size never jumps */
+  margin-bottom: 115px; 
+}
+.multi-select-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 42px;
+  padding: 5px 30px 5px 8px; /* Added right padding for the arrow */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  cursor: pointer; /* Makes it clear it's clickable */
+  align-items: center;
+  position: relative;
+}
+
+.multi-select-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 12px;
+  pointer-events: none; /* Ensures clicking the arrow still clicks the box */
+}
+
+.multi-select-box:focus-within {
+  border-color: rgb(0, 206, 0);
+  outline: 1px solid rgb(0, 206, 0);
+}
+
+.multi-select-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #e0f7fa;
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 13px;
+  color: #006064;
+}
+
+.multi-select-pill button {
+  background: none;
+  border: none;
+  color: #006064;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.multi-select-pill button:hover {
+  color: red;
+}
+
+.multi-select-input {
+  border: none;
+  outline: none;
+  flex-grow: 1;
+  min-width: 50px; /* Reduced so it doesn't dominate the box */
+  padding: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  background: transparent;
+  cursor: pointer; 
+}
+
+.multi-select-menu {
+  position: absolute; /* Re-added so it floats into the reserved margin space */
+  top: 100%;
+  left: 0;
+  right: 0;
+  
+  /* Restricts the height to roughly 3 rows, triggering a scrollbar */
+  max-height: 110px; 
+  overflow-y: auto;
+  
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Restored the floating shadow */
+  z-index: 1001; 
+  list-style: none;
+  margin: 5px 0 0 0;
+  padding: 0;
+}
+
+.multi-select-option {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.multi-select-option:last-child {
+  border-bottom: none;
+}
+
+.multi-select-option:hover {
+  background-color: #f8f8f8;
+  color: rgb(0, 206, 0);
+}

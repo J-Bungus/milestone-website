@@ -1,27 +1,44 @@
-.products-page {
+.products-layout-wrapper {
   display: flex;
+  align-items: flex-start; /* Aligns sidebar and products to the top */
+  gap: 20px; /* Space between sidebar and products */
   background-color: #EFEFF0;
   min-height: 90vh; /* Ensures full page height */
-  padding: 50px; /* More flexible padding */
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+.products-page {
+  display: flex;
   justify-content: flex-start;
   align-items: center; /* Align items to the top for longer lists */
   box-sizing: border-box;
   flex-direction: column;
+  padding: 50px 50px 50px 20px; /* More flexible padding */
+  min-height: 90vh;
+  min-width: 0;
+  margin-left: 0;
+  flex: 1;
+  margin-left: 280px !important;
 }
 
 .products-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px; /* Add spacing between items */
-  max-width: 1200px; /* Limit the content width for better readability */
-  justify-content: center; /* Center align the products */
+  display: grid;
+  /* This creates responsive columns. Adjust '250px' to the actual width of your ProductCard */
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+  gap: 15px; 
+  width: 100%;
+  max-width: 100%; /* Prevents the grid from getting absurdly wide on big monitors */
+  margin-left: auto;  /* Centers the whole grid block horizontally */
+  margin-right: auto;
 }
 
 .search-wrapper {
   display: flex;
-  width: 30vw;
+  width: 30%;
   height: fit-content;
   margin-bottom: 25px;
+  justify-content: center;
 }
 
 .search {
@@ -50,8 +67,10 @@
 }
 
 .menu-wrapper {
-  position: absolute;
-  left: 3%;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .menu {
@@ -90,4 +109,38 @@
   .products-page {
     padding: 10px; /* Reduce padding for smaller screens */
   }
+}
+
+/* Styling for the top-level menu buttons */
+.menu-button {
+  background-color: white; /* Matches your old menu styling */
+  border: 1px solid #ccc; /* Subtle border to define the shape */
+  border-radius: 5px; /* Matches your search button/pagination rounding */
+  padding: 10px 20px;
+  font-family: Lato, sans-serif; /* Matches your search button font */
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Subtle depth */
+}
+
+/* Hover effect to integrate with your green color scheme */
+.menu-button:hover {
+  background-color: #f8f8f8;
+  border-color: rgb(0, 206, 0); /* Subtle nod to your primary green */
+  color: rgb(0, 206, 0);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Ensures the wrapper spaces the buttons nicely */
+.menu-wrapper {
+  display: flex;
+  justify-content: center; /* Centers the menu at the top */
+  flex-wrap: wrap; /* Allows them to stack if the screen is too narrow */
+  gap: 20px; /* Replaces the inline gap style */
+  width: 100%;
+  margin-bottom: 25px; /* Matches the search wrapper margin */
+  padding-top: 20px;
 }

@@ -4,7 +4,7 @@ import "../assets/styles/Header.css";
 
 import CartModal from "./CartModal";
 const cart = require("../assets/imgs/shopping-cart.png");
-const logo = require("../assets/imgs/invoice-logo.png");
+const logo = require("../assets/imgs/header-logo.png");
 
 const Header = () => {
   const [token, setToken] = useGlobal("token");
@@ -33,18 +33,18 @@ const Header = () => {
     }
   }));
 
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      setToken(localStorage.getItem("token"));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (localStorage.getItem("token")) {
+  //     setToken(localStorage.getItem("token"));
+  //   }
+  // }, []);
 
   return (
     <>
       <div className="header-wrapper">
         <img className="logo" src={logo} alt="Milestone Autosupplies Inc Logo"/>
-        { token 
-            ? <nav>
+          <span style={{ fontSize: "32px" }}> <b>Milestone Autosupplies Inc.</b></span>
+          <nav>
                 <ul>
                   { userInfo.is_admin && 
                     <li>
@@ -55,9 +55,10 @@ const Header = () => {
                   <li>
                     <Link to="/products">Products</Link>
                   </li>
-                  <li>
+                  </ul>
+                  {/*<li>
                     <Link to="/account">Account</Link>
-                  </li>
+                  </li> 
                 </ul>
                 <button className="cart-button"
                   onClick={() => {
@@ -75,22 +76,14 @@ const Header = () => {
                   }}
                 >
                   Log-out
-                </button>
+                </button>*/}
               </nav>
-            : <nav>
-              <ul>
-                <li>
-                  <Link to="/"> Login </Link>
-                </li>
-              </ul>
-            </nav>
-        }
-        {
+        {/*
           openCartModal && 
           <CartModal
             onBlur={() => {setOpenCartModal(false); setLoading(false); } }
           />
-        }
+        */}
       </div>
       <Outlet/>
     </>

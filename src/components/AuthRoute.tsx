@@ -73,7 +73,7 @@ const AuthRoute = ({ children, isAdmin }: AuthRouteProps) => {
   if (!isAuthenticated && !token) {
     return <Navigate to="/" replace/>;
   } else if (!isAuthenticated && isAdmin) {
-    return <Navigate to="/products" replace/>;
+    return <Navigate to="/admin-login" replace/>;
   }
 
   return <>{ children }</>;

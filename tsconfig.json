@@ -5,7 +5,9 @@
     "sourceMap": true,
     "typeRoots": ["./types", "./node_modules/@types"],
     "jsx": "react",
-    "lib": [ "ES2015", "dom"] 
+    "lib": [ "ES2015", "dom"] ,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "node_modules"

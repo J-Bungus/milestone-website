@@ -15,6 +15,7 @@ import CategoryProducts from './pages/user/CategoryProducts';
 import './App.css';
 import ForgotPassword from './pages/user/ForgotPassword';
 import ResetPassword from './pages/user/ResetPassword';
+import Contacts from './pages/user/Contacts';
 
 function App() {  
   return (
@@ -22,9 +23,10 @@ function App() {
       <Loader/>
       <Routes>
         <Route path="/" element={<Header/>}>
-          <Route index element={<Login/>}/>
+          <Route index element={<Products/>}/>
+          <Route path="/admin-login" element={<Login/>}/>
           <Route path="/forgot-password" element={<ForgotPassword/>}/>
-          <Route path="/reset-password" element={<ResetPassword/>}/>
+          <Route path="/reset-password" element={<ResetPassword/>}/> 
           <Route 
             path="/admin"
             element={
@@ -34,45 +36,25 @@ function App() {
             }
           />
           <Route 
-            path="/products" 
-            element={
-              <AuthRoute key="products" isAdmin={false}>
-                <Products/>
-              </AuthRoute>
-            }
+            path="/products/*" 
+            element={<Products/>}
           />
-          <Route
-            path="/products/category/*"
-            element={
-              <AuthRoute>
-                <CategoryProducts/>
-              </AuthRoute>
-            }
-          />
-          <Route path="/verify-login" element={<VerifyLogin/>}/>
-          <Route 
+          { /* <Route path="/verify-login" element={<VerifyLogin/>}/> */}
+          { /*<Route 
             path="/invoice" 
-            element={
-              <AuthRoute>
-                <InvoicePage/>
-              </AuthRoute>
-            }
+            element={<InvoicePage/>}
           />
           <Route 
             path="/account" 
-            element={
-              <AuthRoute>
-                <Account/>
-              </AuthRoute>
-            }
-          />
+            element={<Account/>}
+          /> */}
           <Route
             path="/products/specific/:msa_id"
-            element={
-              <AuthRoute>
-                <SpecificProduct/>
-              </AuthRoute>
-            }
+            element={<SpecificProduct/>}
+          />
+          <Route
+            path="/contacts"
+            element={<Contacts/>}
           />
         </Route>
       </Routes>

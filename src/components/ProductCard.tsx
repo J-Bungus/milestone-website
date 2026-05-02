@@ -9,12 +9,6 @@ import "../assets/styles/ProductCard.css";
 const ProductCard = ({ product, cart = {}, setCart }: ProductCardProps) => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      navigate(`../`);
-    }
-  }, []);
-
   return (
     <div className="product-card-wrapper">
       <div className="product-image-wrapper">
@@ -29,6 +23,7 @@ const ProductCard = ({ product, cart = {}, setCart }: ProductCardProps) => {
         <img className="product-image" src={`${process.env.REACT_APP_GCP_BUCKET_URL}/${product.images[0]}`} alt={product.name}/>
       </div>
       <div className="part-number"><strong>Part #: </strong>{product.msa_id}</div>
+      {/*
       <div className="product-name">{product.name}</div>
       <AddItemButton cart={cart} setCart={setCart} product={product} />
       <div className="package-selection">
@@ -68,7 +63,7 @@ const ProductCard = ({ product, cart = {}, setCart }: ProductCardProps) => {
           {product.has_package && <option value="small">Small Package ({product.package_size} {product.unit_type})</option>}
           {product.has_big_package && <option value="big">Big Package ({product.big_package_size} {product.unit_type})</option>}
         </select>
-      </div>
+      </div> */}
     </div>
   );
 }

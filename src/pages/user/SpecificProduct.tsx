@@ -57,11 +57,7 @@ const SpecificProduct = () => {
         const token = localStorage.getItem("token");
         const endpoint = `${process.env.REACT_APP_API}/products/specific/${msa_id}`;
         try {
-          const res = await axios.get(endpoint, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
+          const res = await axios.get(endpoint);
 
           const { fetchedProduct } = res.data;
           console.log(fetchedProduct);
@@ -156,7 +152,7 @@ const SpecificProduct = () => {
           }
         </div>
         <div className="part-info-section">
-          <div className="package-types"><span>Available in: </span> Individual Units ({ product.unit_type })
+          <div className="package-types"><span>Available in: </span>
             {
               product.has_package && `, Small Package (${product.package_size} ${product.unit_type})`
             }

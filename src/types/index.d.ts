@@ -85,7 +85,8 @@ export interface Category {
   name: string,
   parent_id: number | null,
   is_leaf: boolean,
-  order_index: number
+  order_index: number,
+  path: string | null
 }
 
 export interface CategoryTree {
@@ -94,6 +95,7 @@ export interface CategoryTree {
   parent_id: number | null,
   is_leaf: boolean,
   order_index: number,
+  path: string | null,
   children?: Array<CategoryTree>
 }
 
