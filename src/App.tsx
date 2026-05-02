@@ -1,5 +1,5 @@
 import React from 'reactn';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Login from "./pages/user/Login";
 import Products from './pages/user/Products';
@@ -23,7 +23,7 @@ function App() {
       <Loader/>
       <Routes>
         <Route path="/" element={<Header/>}>
-          <Route index element={<Products/>}/>
+          <Route index element={<Navigate to="/products" replace />}/>
           <Route path="/admin-login" element={<Login/>}/>
           <Route path="/forgot-password" element={<ForgotPassword/>}/>
           <Route path="/reset-password" element={<ResetPassword/>}/> 

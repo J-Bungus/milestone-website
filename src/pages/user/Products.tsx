@@ -92,6 +92,16 @@ const Products = () => {
 
   // 4. Fetch Products based on Context (Category vs Global)
   useEffect(() => {
+    // Prevent fetching if we are on a category URL but the category hasn't loaded yet
+    if (categories && !currentCategory) return;
+
+    // Instantly clear the old products so the user doesn't see stale data while loading
+    setProducts([]);
+    
+    // Create an AbortController to cancel out-of-date requests
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const fetchProducts = async () => {
       try {
         let endpoint = "";
@@ -106,24 +116,31 @@ const Products = () => {
           }
         }
 
-        const res = await axios.get(endpoint);
-        // Add fallbacks just in case the API returns null
-        console.log(res.data.products);
+        // Pass the signal to the axios request
+        const res = await axios.get(endpoint, { signal });
+        
         setProducts(res.data.products || []);
         setTotalProducts(res.data.totalProducts || 0);
       } catch (error) {
-        console.error("Failed to fetch products", error);
-        setProducts([]);
-        setTotalProducts(0);
+        // Axios throws a specific error if the request was intentionally aborted
+        if (axios.isCancel(error)) {
+          console.log("Previous product fetch cancelled due to rapid clicking.");
+        } else {
+          console.error("Failed to fetch products", error);
+          setProducts([]);
+          setTotalProducts(0);
+        }
       }
     };
 
-    // Prevent fetching if we are on a category URL but the category hasn't loaded yet
-    if (categories && !currentCategory) return;
-    
     fetchProducts();
-  }, [page, itemsPerPage, searchTerm, currentCategory, categories]);
 
+    // The Cleanup Function: aborts the request if the component re-renders
+    return () => {
+      controller.abort();
+    };
+  }, [page, itemsPerPage, searchTerm, currentCategory, categories]);
+  
   // Error State: URL has a category, but it doesn't exist in our tree
   if (categories && !currentCategory && categoryTrees.length > 0) {
     return <div style={{ padding: '20px' }}>Category not found.</div>;
