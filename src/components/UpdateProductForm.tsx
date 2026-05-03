@@ -226,8 +226,8 @@ const EditProductForm = () => {
                     <span>{field.key === "package_size" ? product.unit_type : product.big_unit_type}</span>
                     <input  
                       type="number"
-                      value={product[field.key] as number}
-                      onChange={e => setProduct({ ...product, [field.key]: Number(e.target.value) })}
+                      value={product[field.key] === "" ? "" :product[field.key] as number}
+                      onChange={e => setProduct({ ...product, [field.key]: e.target.value === "" ? "" : Number(e.target.value) })}
                       style={{ width: "100%", padding: "10px", boxSizing: "border-box", borderRadius: "4px", border: "1px solid #ccc" }}
                     />
                   </div>
