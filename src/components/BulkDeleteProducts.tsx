@@ -42,7 +42,6 @@ const BulkDeleteProducts = () => {
 
   useEffect(() => {
     fetchProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -70,7 +69,6 @@ const BulkDeleteProducts = () => {
     }
   };
 
-  // --- THE BULLETPROOF LOGIC UPDATE ---
   const onMove = ({ store: { selected } }: SelectionEvent) => {
     // 'selected' contains the absolute list of elements currently touching the blue box
     const intersectedIds = extractIds(selected);
@@ -85,7 +83,6 @@ const BulkDeleteProducts = () => {
       return Array.from(next);
     });
   };
-  // ------------------------------------
 
   const handleToggle = (msa_id: string, index: number, event: React.MouseEvent) => {
     event.stopPropagation(); 
@@ -101,11 +98,12 @@ const BulkDeleteProducts = () => {
       });
       setLastSelectedIndex(null);
     } else {
+      if (event.shiftKey) setLastSelectedIndex(index);
+
       setSelectedMsaIds((prev) => {
         if (prev.includes(msa_id)) return prev.filter((id) => id !== msa_id);
         return [...prev, msa_id];
       });
-      setLastSelectedIndex(index);
     }
   };
 
