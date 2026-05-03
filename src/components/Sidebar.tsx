@@ -32,8 +32,8 @@ const Sidebar: React.FC<SidebarProps> = ({ categoryTrees, navigate }) => {
         direction="right"
         align="start"
       >
-        {category.children.map((child) => renderNestedItem(child, nextPath))}
         <MenuItem onClick={() => navigate(linkPath)}>View All</MenuItem>
+        {category.children.map((child) => renderNestedItem(child, nextPath))}
       </SubMenu>
     );
   };

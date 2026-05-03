@@ -75,6 +75,7 @@ const EditProductForm = () => {
       const res = await axios.get(endpoint);
       
       const { fetchedProduct } = res.data;
+
       if (fetchedProduct) {
         setProduct(fetchedProduct);
         setIsLoaded(true);
@@ -305,7 +306,7 @@ const EditProductForm = () => {
                   return;
                 }
 
-                const endpoint = `${process.env.REACT_APP_API}/products/update`;
+                const endpoint = `${process.env.REACT_APP_API}/products/update/${product.msa_id}`;
                 const formData = new FormData();
                 
                 if (files.length > 0) {
@@ -313,7 +314,7 @@ const EditProductForm = () => {
                     formData.append('images', file);
                   });
                 }
-
+                
                 formData.append("product", JSON.stringify(product));
 
                 const token = localStorage.getItem("token");
@@ -336,11 +337,83 @@ const EditProductForm = () => {
                   setShowInvalidText(true);
                 } finally {
                   setLoading(false);
+                  setProduct({
+                    id: -1,
+                    msa_id: "",
+                    name: "",
+                    description: "",
+                    unit_price: 0,
+                    unit_type: "pcs", 
+                    has_package: true, 
+                    has_big_package: false,
+                    package_price: 0,
+                    big_package_price: 0,
+                    package_size: 0,
+                    big_package_size: 0,
+                    images: [],
+                    categories: []
+                  });
+                  setFiles([]);
+                  setIsLoaded(false);
+                  setSearchTerm("");
                 }
               }}
             >
               Update Product
             </button>
+            <button
+                className="cart-action gen"
+                style={{ 
+                  margin: 0, 
+                  backgroundColor: '#dc3545', // A nice danger red
+                  color: 'white',
+                  border: 'none',
+                  flex: 0.3 // Makes the delete button slightly narrower than the update button
+                }}
+                onClick={async () => {
+                  // 1. Force the user to confirm before doing anything destructive
+                  const confirmed = window.confirm(
+                    `Are you sure you want to completely delete Part #${product.msa_id}?\n\nThis will remove all associated images and cannot be undone.`
+                  );
+                  
+                  if (!confirmed) return;
+
+                  setLoading(true);
+                  const token = localStorage.getItem("token");
+                  const endpoint = `${process.env.REACT_APP_API}/products/delete/${product.msa_id}`;
+
+                  try {
+                    // 2. Fire the delete request to the backend
+                    await axios.delete(endpoint, {
+                      headers: { Authorization: `Bearer ${token}` }
+                    });
+
+                    // 3. Show success message
+                    setInvalidText("Product deleted successfully!");
+                    setShowInvalidText(true);
+                    
+                    // 4. Reset the form back to the blank search state after 2 seconds
+                    setTimeout(() => {
+                      setShowInvalidText(false);
+                      setIsLoaded(false);
+                      setSearchTerm("");
+                    }, 2000);
+
+                  } catch (error) {
+                    console.error(error);
+                    if (error instanceof AxiosError) {
+                      setInvalidText(error?.response?.data?.message || "Failed to delete product");
+                    } else {
+                      setInvalidText("An unexpected error occurred while deleting.");
+                    }
+                    setShowInvalidText(true);
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+              >
+                Delete
+              </button>
           </>
         )}
       </div>

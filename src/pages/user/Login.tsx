@@ -55,7 +55,7 @@ const Login = () => {
     <div className="login-wrapper">
       <div className="login-modal">
         <div className="login-title">Admin Login</div>
-        <div className="login-description">This is for Milestone Autosupplies Employees Only.</div>
+        <div className="login-description">This is for Milestone Autosupplies Inc. Employees Only.</div>
         <div className="login-inputs">
           <div>Username</div>
           <input
