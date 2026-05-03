@@ -170,7 +170,7 @@ const SpecificProduct = () => {
                   product.big_unit_type.includes("Package")
                     ? "Big Package"
                     : "Cases"
-                } (${product.big_package_size} ${product.unit_type})`}
+                } (${product.big_package_size} ${product.big_unit_type})`}
               </div>
             </div>
             <section>
