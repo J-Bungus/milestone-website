@@ -13,9 +13,6 @@ const SpecificProduct = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useGlobal("loading");
   
-  const [labeledInfo, setLabeledInfo] = useState<Array<{label: string, value: string}>>([]);
-  const [unlabeledInfo, setUnlabeledInfo] = useState<Array<string>>([]);
-  
   const breadCrumbPath = location.state?.breadCrumbPath || [];
   
   const [product, setProduct] = useState<Product>({
@@ -25,6 +22,7 @@ const SpecificProduct = () => {
     description: "",
     unit_price: 0,
     unit_type: "",
+    big_unit_type: "",
     has_package: false,
     has_big_package: false,
     package_price: 0,
@@ -42,28 +40,10 @@ const SpecificProduct = () => {
       
       try {
         // Always fetch fresh data using the MSA ID from the URL
-        const endpoint = `${process.env.REACT_APP_API}/products/specific/${msa_id}`;
+        const endpoint = `${process.env.REACT_APP_API}/products/specific/${encodeURIComponent(msa_id || "")}`;
         const res = await axios.get(endpoint);
         const { fetchedProduct } = res.data;
-        
-        // Reset our arrays so we don't accidentally append to old data if msa_id changes
-        const newLabeled: Array<{label: string, value: string}> = [];
-        const newUnlabeled: Array<string> = [];
 
-        fetchedProduct.description.split(",").forEach((info: string) => {
-          const isLabeled = info.split(':').length === 2;
-          if (isLabeled) {
-            newLabeled.push({
-              label: info.split(':')[0],
-              value: info.split(':')[1]
-            });
-          } else {
-            newUnlabeled.push(info);
-          }
-        });
-
-        setLabeledInfo(newLabeled);
-        setUnlabeledInfo(newUnlabeled);
         setProduct(fetchedProduct);
         
       } catch (error) {
@@ -156,14 +136,18 @@ const SpecificProduct = () => {
         <div className="left-column">
           <ImageGallery 
             items={product.images.map((image: string) => ({ 
-              original: `${process.env.REACT_APP_GCP_BUCKET_URL}/${image}`,
+              original: `${process.env.REACT_APP_GCP_BUCKET_URL}/${encodeURIComponent(image || "")}`,
+              thumbnail: `${process.env.REACT_APP_GCP_BUCKET_URL}/${encodeURIComponent(image || "")}`,
               originalClass: "specific-img-gallery"
             }))}
+            showPlayButton={false}
+            showFullscreenButton={false}
+            autoPlay={false}
           />
         </div>
         <div className="right-column">
-          <div className="specific-item-name">{product.name}</div>
-          <div className="specific-part-number"><span>Part #:</span> {product.msa_id}</div>
+          {/* {<div className="specific-item-name">{product.name}</div>} */}
+          <div className="specific-item-name"><span>Part #:</span> {product.msa_id}</div>
           
           {/* Categories are just read straight out of the fresh product data! */}
           <div className="category-tags">
@@ -173,22 +157,31 @@ const SpecificProduct = () => {
           </div>
 
           <div className="part-info-section">
-            <div className="package-types"><span>Available in: </span>
-              {product.has_package && `Small Package (${product.package_size} ${product.unit_type})`}
-              {product.has_big_package && `, Big Package (${product.big_package_size} ${product.unit_type})`}
+            <div className="package-types"><span>Available in: </span> <br/>
+              <div >
+                {product.has_package && `${
+                  product.unit_type.includes("Package") 
+                    ? "Small Package"
+                    : product.unit_type.includes("Box")
+                      ? "Boxes"
+                      : "Rolls"
+                } (${product.package_size} ${product.unit_type})`} <br/>
+                {product.has_big_package && `${
+                  product.big_unit_type.includes("Package")
+                    ? "Big Package"
+                    : "Cases"
+                } (${product.big_package_size} ${product.unit_type})`}
+              </div>
             </div>
-            {labeledInfo.map(info => (
-              <div key={info.label + info.value} className="part-info-row">
-                <span className="row-label">{info.label}</span>
-                <span className="row-value">{info.value}</span>
+            <section>
+              <div className="part-info">
+                <span><b>Description:</b></span><br/>
+                <div style={{ whiteSpace: 'pre-wrap' }}>
+                  {product.description}
+                </div>
               </div>
-            ))}
-            {unlabeledInfo.length > 0 && (
-              <div className="part-info-row">
-                <span className="row-label">Additional Info</span>
-                <span className="row-value">{unlabeledInfo.join(", ")}</span>
-              </div>
-            )}
+            </section>
+
           </div>
         </div>
       </div>

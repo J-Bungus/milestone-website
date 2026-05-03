@@ -1,0 +1,162 @@
+/* Container Layout */
+.bulk-delete-wrapper {
+  display: flex;
+  align-items: center; /* Centers the box vertically */
+  justify-content: center;
+  width: 100%;
+  /* Locks the height to the viewport. Change 100px to match your navbar height if needed! */
+  height: 80vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.bulk-delete-container {
+  position: relative;
+  width: 90%;
+  max-width: 1200px;
+  height: 100%; /* Forces the box to stretch to the wrapper's height */
+  display: flex;
+  flex-direction: column; /* Stacks the header, controls, and grid vertically */
+  background-color: white; 
+  border-radius: 8px;      
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  padding: 0 30px; /* Removed bottom padding so the scrollbar touches the bottom */
+}
+
+
+
+/* Viselect Drag Box */
+.selection-area {
+  background: rgba(46, 115, 252, 0.15);
+  border: 2px solid rgba(46, 115, 252, 0.8);
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+/* Ensures Viselect doesn't crush the grid */
+.selection-area-wrapper {
+  width: 100%;
+  flex-grow: 1;
+  min-height: 0;
+  overflow-y: auto; 
+  display: block; /* Change from flex to block */
+}
+
+/* Header & Controls */
+.bulk-delete-header {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 100;
+  width: 100%;
+  padding-top: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bulk-delete-header h2 { margin: 0; }
+.bulk-delete-subtitle { color: #888; font-size: 14px; margin-top: 5px; display: block; }
+.bulk-delete-actions { display: flex; gap: 15px; align-items: center; }
+.selected-count { font-weight: bold; color: #666; }
+
+.bulk-delete-btn {
+  margin: 0;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.bulk-delete-btn.active { background-color: #dc3545; cursor: pointer; }
+.bulk-delete-btn.active:hover { background-color: #c82333; }
+.bulk-delete-btn.disabled { background-color: #ccc; cursor: not-allowed; }
+
+.status-message { padding: 15px 0; font-weight: bold; text-align: center; }
+.status-message.error { color: red; }
+.status-message.success { color: green; }
+
+.bulk-delete-controls {
+  padding: 15px 0;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid #ddd;
+}
+
+.select-all-btn {
+  padding: 6px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.select-all-btn:hover { background-color: #e4e4e4; }
+
+/* THE GRID */
+.bulk-delete-grid {
+  padding: 20px 5px 30px 5px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 15px;
+  align-content: start;
+}
+
+.empty-state {
+  padding: 30px;
+  text-align: center;
+  color: #888;
+  grid-column: 1 / -1; 
+}
+
+/* THE SELECTABLE CARDS */
+.selectable-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  background-color: #fafafa;
+  color: #333333;
+  border: 2px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transform: scale(1);
+}
+
+.selectable-card:hover { border-color: #bbb; }
+
+/* Dynamic Selected State */
+.selectable-card.selected {
+  background-color: #007bff;
+  color: #ffffff;
+  border: 2px solid #0056b3;
+  box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+  transform: scale(0.98);
+}
+
+.card-label { font-size: 12px; opacity: 0.5; margin-bottom: 5px; }
+.selectable-card.selected .card-label { opacity: 0.8; }
+
+.card-id {
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.bulk-delete-header,
+.bulk-delete-controls,
+.status-message {
+  flex-shrink: 0; 
+}

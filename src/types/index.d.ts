@@ -7,6 +7,7 @@ export interface Product {
   description: string,
   unit_price: number,
   unit_type: string,
+  big_unit_type: string,
   has_package: boolean,
   has_big_package: boolean,
   package_price: number,

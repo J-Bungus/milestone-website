@@ -107,10 +107,10 @@ const Products = () => {
         let endpoint = "";
         
         if (currentCategory) {
-          endpoint = `${process.env.REACT_APP_API}/products/search-in-category?page=${page}&itemsPerPage=${itemsPerPage}&category_id=${currentCategory.id}&searchTerm=${searchTerm}`;
+          endpoint = `${process.env.REACT_APP_API}/products/search-in-category?page=${page}&itemsPerPage=${itemsPerPage}&category_id=${currentCategory.id}&searchTerm=${encodeURIComponent(searchTerm)}`;
         } else {
           if (searchTerm) {
-            endpoint = `${process.env.REACT_APP_API}/products/search?page=${page}&itemsPerPage=${itemsPerPage}&searchTerm=${searchTerm}`;
+            endpoint = `${process.env.REACT_APP_API}/products/search?page=${page}&itemsPerPage=${itemsPerPage}&searchTerm=${encodeURIComponent(searchTerm)}`;
           } else {
             endpoint = `${process.env.REACT_APP_API}/products/all?page=${page}&itemsPerPage=${itemsPerPage}`;
           }

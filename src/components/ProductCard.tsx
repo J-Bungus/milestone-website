@@ -15,12 +15,12 @@ const ProductCard = ({ product, breadCrumbPath, cart = {}, setCart }: ProductCar
         <div className="product-overlay">
           <button 
             className="detailed-view"
-            onClick={() => navigate(`/product-details/${product.msa_id}`, { state: { product: product, breadCrumbPath: breadCrumbPath } })}
+            onClick={() => navigate(`/product-details/${encodeURIComponent(product.msa_id || "")}`, { state: { product: product, breadCrumbPath: breadCrumbPath } })}
           >
             Detailed View
           </button>
         </div>
-        <img className="product-image" src={`${process.env.REACT_APP_GCP_BUCKET_URL}/${product.images[0]}`} alt={product.name}/>
+        <img className="product-image" src={`${process.env.REACT_APP_GCP_BUCKET_URL}/${encodeURIComponent(product.images[0] || "")}`} alt={product.msa_id}/>
       </div>
       <div className="part-number"><strong>Part #: </strong>{product.msa_id}</div>
       {/*

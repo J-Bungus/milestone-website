@@ -7,6 +7,7 @@ import AddProductForm from "../../components/AddProductForm";
 import Categories from "./Categories";
 import "../../assets/styles/Admin.css";
 import UpdateProductForm from "../../components/UpdateProductForm";
+import BulkDeleteProducts from "../../components/BulkDeleteProducts";
 
 const Admin = () => {
   const [value, setValue] = useState<number>(0);
@@ -17,12 +18,14 @@ const Admin = () => {
         {/*<Tab label="Register Client"/>*/}
         <Tab label="Add Product"/>
         <Tab label="Update Product"/>
+        <Tab label="Delete Products"/>
         <Tab label="Build Categories"/>
       </Tabs>
       {/*value === 0 && <ClientRegistrationForm/>*/}
       {value === 0 && <AddProductForm/>}
       {value === 1 && <UpdateProductForm/>}
-      {value === 2 && <Categories/>}
+      {value === 2 && <BulkDeleteProducts/>}
+      {value === 3 && <Categories/>}
     </div>
   );
 };

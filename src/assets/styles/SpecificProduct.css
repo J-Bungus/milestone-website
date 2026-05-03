@@ -41,13 +41,13 @@
 }
 
 .package-types {
-  margin-left: 20px;
   margin-bottom: 15px;
   margin-top: 15px;
 }
 
 .package-types span {
   font-weight: bold;
+  font-size: 18px;
 }
 
 .part-info-row {
@@ -59,8 +59,9 @@
   border-color: gray;
 }
 
-.part-info-row:nth-child(even) {
-  background-color: rgb(230, 230, 230);
+.part-info span {
+  font-weight: bold;
+  font-size: 18px;
 }
 
 .row-label {
@@ -89,6 +90,11 @@
 }
 
 .MuiChip-root {
-  margin-left: 20px !important;
   font-family: Lato !important;
+}
+
+.category-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
