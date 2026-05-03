@@ -155,8 +155,8 @@ const AddProductForm = () => {
                 <span>{field.key === "package_size" ? product.unit_type : product.big_unit_type}</span>
                 <input  
                   type="number"
-                  value={product[field.key] as number}
-                  onChange={e => setProduct({ ...product, [field.key]: Number(e.target.value) })}
+                  value={product[field.key] === "" ? "" : product[field.key] as number}
+                  onChange={e => setProduct({ ...product, [field.key]: e.target.value === "" ? "" : Number(e.target.value) })}
                   style={{ width: "100%", padding: "10px", boxSizing: "border-box", borderRadius: "4px", border: "1px solid #ccc" }}
                 />
               </div>
@@ -218,6 +218,7 @@ const AddProductForm = () => {
                 <div style={{ width: "100%"}}>
                   <Select
                     isMulti
+                    value={categoryOptions.filter(category => product.categories.includes(String(category.id))).map(category => ({ value: String(category.id), label: category.path || category.name}))}
                     onChange={options => setProduct({...product, categories: options.map(option => option.value) })}
                     options={categoryOptions.map(category => ({ value: String(category.id), label: category.path || category.name }))}
                     styles={{
@@ -258,7 +259,6 @@ const AddProductForm = () => {
           className="cart-action gen"
           style={{ marginTop: '20px' }}
           onClick={async () => {
-            // Validation removed! We proceed straight to submission.
             setLoading(true);
             setShowInvalidText(false);
 
@@ -293,6 +293,8 @@ const AddProductForm = () => {
                 images: [],
                 categories: []
               });
+              const fileInput = document.getElementById('images') as HTMLInputElement;
+              if (fileInput) fileInput.value = "";
               setFiles([]); 
               setLoading(false);
               

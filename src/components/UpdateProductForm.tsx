@@ -326,7 +326,7 @@ const EditProductForm = () => {
                     type={field.key.includes('price') || field.key.includes('size') ? 'number' : 'text'}
                     id={field.key}
                     disabled={field.key === "msa_id"} // Important so they can't change the primary identifier!
-                    value={product[field.key] as string | number}
+                    value={product[field.key] === "" ? "" : product[field.key] as string | number}
                     onChange={e => setProduct({...product, [field.key]: e.target.value})}
                     style={{ 
                       backgroundColor: field.key === "msa_id" ? "#f5f5f5" : "white",
@@ -361,7 +361,6 @@ const EditProductForm = () => {
                   }
                   
                   formData.append("product", JSON.stringify(product));
-
                   const token = localStorage.getItem("token");
                   try {
                     await axios.patch(endpoint, formData, {
@@ -370,7 +369,7 @@ const EditProductForm = () => {
 
                     setInvalidText("Product updated successfully!");
                     setShowInvalidText(true);
-                    setTimeout(() => setShowInvalidText(false), 3000); 
+                    setTimeout(() => {setShowInvalidText(false); setIsLoaded(false);}, 3000); 
                     
                   } catch(error) {
                     console.error(error);
@@ -382,7 +381,6 @@ const EditProductForm = () => {
                     setShowInvalidText(true);
                   } finally {
                     setLoading(false);
-                    // Clear the form after a successful update
                     setProduct({
                       id: -1,
                       msa_id: "",
@@ -402,7 +400,6 @@ const EditProductForm = () => {
                       category_ids: []
                     });
                     setFiles([]);
-                    setIsLoaded(false);
                     setSearchTerm("");
                   }
                 }}
