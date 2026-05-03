@@ -119,7 +119,7 @@ const BulkDeleteProducts = () => {
     if (selectedMsaIds.length === 0) return;
 
     const confirmed = window.confirm(
-      `Are you ABSOLUTELY sure you want to delete ${selectedMsaIds.length} products?\n\nThis will permanently remove them and all their images from the database.`
+      `Are you sure you want to delete ${selectedMsaIds.length} products?\n\nThis will permanently remove them and all their images from the database.`
     );
 
     if (!confirmed) return;
@@ -129,37 +129,29 @@ const BulkDeleteProducts = () => {
     setIsError(false);
 
     const token = localStorage.getItem("token");
-    let successCount = 0;
-    let failCount = 0;
 
-    for (let i = 0; i < selectedMsaIds.length; i++) {
-      const msa_id = selectedMsaIds[i];
-      const endpoint = `${process.env.REACT_APP_API}/products/delete/${encodeURIComponent(msa_id)}`;
+    const endpoint = `${process.env.REACT_APP_API}/products/bulk-delete`;
 
-      try {
-        await axios.delete(endpoint, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        successCount++;
-        setStatusMessage(`Deleting ${successCount} of ${selectedMsaIds.length} products...`);
-      } catch (error) {
-        console.error(`Failed to delete product ${msa_id}:`, error);
-        failCount++;
+    try {
+      const res = await axios.patch(endpoint, { msa_ids: selectedMsaIds }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setStatusMessage(`Deleting ${selectedMsaIds.length} products...`);
+
+      if (res.status === 200) {
+        setStatusMessage(res.data.message);
+        setIsError(false);
       }
+    } catch (error) {
+      console.error(`An error occurred while deleting products`, error);
+      setIsError(true);
     }
 
+    setTimeout(() => setStatusMessage(""), 5000);
     setLoading(false);
     setSelectedMsaIds([]); 
     setLastSelectedIndex(null);
-    
-    if (failCount > 0) {
-      setStatusMessage(`Deleted ${successCount} products, but failed to delete ${failCount}.`);
-      setIsError(true);
-    } else {
-      setStatusMessage(`Successfully deleted all ${successCount} selected products!`);
-      setIsError(false);
-      setTimeout(() => setStatusMessage(""), 4000);
-    }
 
     fetchProducts();
   };
