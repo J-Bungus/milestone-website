@@ -282,11 +282,11 @@ const AddCategory: React.FC<AddCategoryProps> = ({
 
           {/* NEW: Input field for Order Index */}
           <div className="form-group">
-            <label htmlFor="orderIndex">Order Index (Optional)</label>
+            <label htmlFor="orderIndex">Order Value (Optional)</label>
             <input 
               id="orderIndex" 
               type="number" 
-              value={orderIndex} 
+              value={orderIndex === '' ? '' : Number(orderIndex)} 
               onChange={(e) => setOrderIndex(e.target.value)} 
               placeholder="e.g. 1"
             />
@@ -299,7 +299,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({
               checked={isLeaf} 
               onChange={(e) => setIsLeaf(e.target.checked)} 
             />
-            <label htmlFor="isLeaf">Is this a leaf category? (Allows product assignment)</label>
+            <label htmlFor="isLeaf">Is this a leaf category? (It has no subcategories)</label>
           </div>
 
           {/* --- Multi-Select Dropdown Menu --- */}
