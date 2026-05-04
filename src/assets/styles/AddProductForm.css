@@ -26,6 +26,8 @@
   display: flex;
   gap: 1rem;
   position: relative;
+  width: 100%; 
+  align-items: center; 
 }
 
 .product-form .description {
@@ -38,7 +40,17 @@
 }
 
 .account-field > span {
-  white-space: nowrap;
+  flex: 0 0 160px; /* Lock EVERY label to exactly 160px wide */
+  white-space: normal; /* REMOVED nowrap: allows long text to wrap to a new line safely */
+  line-height: 1.4;
+}
+
+.product-form .description {
+  align-items: flex-start;
+}
+
+.product-form .description > span {
+  margin-top: 10px;
 }
 
 .product-form .account-field input {
@@ -48,6 +60,7 @@
 /* --- New / Updated Form Input Styles --- */
 .form-select, 
 .form-input {
+  flex: 1; /* Forces the box to stretch exactly to the right edge */
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
@@ -70,6 +83,7 @@
 }
 
 .select-wrapper {
+  flex: 1; /* Forces the React-Select category dropdown to line up perfectly too */
   width: 100%;
 }
 
