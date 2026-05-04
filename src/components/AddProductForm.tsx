@@ -1,6 +1,6 @@
 import React, { useGlobal, useState, useEffect } from "reactn";
 import axios, { AxiosError } from "axios";
-import { Category } from "../types"; // Removed Product type import to avoid strict type errors with the new fields
+import { Category } from "../types"; 
 import { Switch } from "@material-ui/core";
 import Select from "react-select";
 
@@ -8,10 +8,9 @@ import "../assets/styles/AddProductForm.css";
 import "../assets/styles/Account.css";
 
 const AddProductForm = () => {
-  // Switched to <any> so Typescript doesn't complain about the new big_unit_type
   const [product, setProduct] = useState<any>({
     msa_id: "",
-    name: "N/A", // Hidden default to satisfy backend requirements
+    name: "N/A", 
     description: "",
     unit_price: 0,
     unit_type: "pcs/Box", 
@@ -30,8 +29,8 @@ const AddProductForm = () => {
   const [invalidText, setInvalidText] = useState<string>("");
   const [showInvalidText, setShowInvalidText] = useState<boolean>(false);
   const [loading, setLoading] = useGlobal("loading");
+  const [isError, setIsError] = useState<boolean>(false);
 
-  // Removed "Name" and removed "required" properties entirely
   const fields: Array<{ key: string, text: string }> = [
     { key: "msa_id", text: "Part #" },
     { key: "description", text: "Description" },
@@ -105,6 +104,7 @@ const AddProductForm = () => {
               <div key={field.key} className="account-field">
                 <span>{field.text}</span>
                 <select
+                  className="form-select"
                   value={product.unit_type}
                   onChange={(e) => {
                     const newUnit = e.target.value;
@@ -122,7 +122,6 @@ const AddProductForm = () => {
                       has_big_package: hasBigPackage
                     });
                   }}
-                  style={{ padding: "10px", boxSizing: "border-box", borderRadius: "4px", border: "1px solid #ccc" }}
                 >
                   <option value="pcs/Box">pcs/Box</option>
                   <option value="pcs/Package">pcs/Pkg</option>
@@ -138,9 +137,9 @@ const AddProductForm = () => {
               <div key={field.key} className="account-field">
                 <span>{product.big_unit_type}</span>
                 <select
+                  className="form-select"
                   value={product.big_unit_type}
                   onChange={(e) => setProduct({ ...product, big_unit_type: e.target.value })}
-                  style={{ padding: "10px", boxSizing: "border-box", borderRadius: "4px", border: "1px solid #ccc" }}
                 >
                   <option value="pcs/Big Package">pcs / Big pkg</option>
                   <option value="bxs/Case">bxs/Case</option>
@@ -154,10 +153,10 @@ const AddProductForm = () => {
               <div key={field.key} className="account-field">
                 <span>{field.key === "package_size" ? product.unit_type : product.big_unit_type}</span>
                 <input  
+                  className="form-input"
                   type="number"
                   value={product[field.key] === "" ? "" : product[field.key] as number}
                   onChange={e => setProduct({ ...product, [field.key]: e.target.value === "" ? "" : Number(e.target.value) })}
-                  style={{ width: "100%", padding: "10px", boxSizing: "border-box", borderRadius: "4px", border: "1px solid #ccc" }}
                 />
               </div>
             );
@@ -175,12 +174,17 @@ const AddProductForm = () => {
                     multiple
                     onChange={e => {
                       if (!e.target.files) return;
-                      const filesList = Array.from(e.target.files);
-                      setFiles(filesList);
-                      setProduct({
-                        ...product,
-                        images: filesList.map(file => URL.createObjectURL(file))
-                      });
+                      
+                      const newFiles = Array.from(e.target.files);
+                      const newUrls = newFiles.map(file => URL.createObjectURL(file));
+
+                      setFiles(prevFiles => [...prevFiles, ...newFiles]);
+                      setProduct((prevProduct: any) => ({
+                        ...prevProduct,
+                        images: [...prevProduct.images, ...newUrls]
+                      }));
+
+                      e.target.value = "";
                     }}
                   />
                 </div>
@@ -189,6 +193,24 @@ const AddProductForm = () => {
                     return (
                       <div key={image + i} className="preview-wrapper">
                         <img className="preview-img" src={image} alt={files[i]?.name || "Preview"}/>
+                        <button
+                          type="button" 
+                          className="delete-image-btn"
+                          onClick={() => {
+                            const updatedFiles = [...files];
+                            const updatedImages = [...product.images];
+
+                            updatedFiles.splice(i, 1);
+                            updatedImages.splice(i, 1);
+
+                            setFiles(updatedFiles);
+                            setProduct({ ...product, images: updatedImages });
+
+                            URL.revokeObjectURL(image);
+                          }}
+                        >
+                          X
+                        </button>
                       </div>
                     );
                   })}
@@ -202,8 +224,9 @@ const AddProductForm = () => {
               <div key={field.key} className="account-field description">
                 <span>{field.text}</span>
                 <textarea
+                  className="description-input"
                   id={field.key}
-                  rows={4}
+                  rows={5}
                   value={product[field.key] as string}
                   onChange={e => setProduct({ ...product, [field.key]: e.target.value })}
                 />
@@ -215,7 +238,7 @@ const AddProductForm = () => {
             return (
               <div key={field.key} className="account-field">
                 <span>{field.text}</span>
-                <div style={{ width: "100%"}}>
+                <div className="select-wrapper">
                   <Select
                     isMulti
                     value={categoryOptions.filter(category => product.categories.includes(String(category.id))).map(category => ({ value: String(category.id), label: category.path || category.name}))}
@@ -243,17 +266,17 @@ const AddProductForm = () => {
             <div key={field.key} className="account-field">
               <span>{field.text}</span>
               <input
+                className="form-input"
                 type={field.key.includes('price') || field.key.includes('size') ? 'number' : 'text'}
                 id={field.key}
                 value={product[field.key] as string | number}
                 onChange={e => setProduct({ ...product, [field.key]: e.target.value })}
-                style={{ width: '100%', boxSizing: 'border-box' }}
               />
             </div>
           );
         })}
         
-        { showInvalidText && <div style={{color: "red", marginTop: "10px"}}> {invalidText} </div>}
+        { showInvalidText && <div style={{color: isError ? "red" : "green", marginTop: "10px"}}> {invalidText} </div>}
         
         <button
           className="cart-action gen"
@@ -276,7 +299,6 @@ const AddProductForm = () => {
                 headers: { Authorization: `Bearer ${token}` }
               });
 
-              // Reset form with the new defaults
               setProduct({
                 msa_id: "",
                 name: "N/A",
@@ -297,14 +319,15 @@ const AddProductForm = () => {
               if (fileInput) fileInput.value = "";
               setFiles([]); 
               setLoading(false);
+              setIsError(false);
               
-              // Give them a success message
               setInvalidText("Product added successfully!");
               setShowInvalidText(true);
               setTimeout(() => setShowInvalidText(false), 3000);
 
             } catch(error) {
               console.error(error);
+              setIsError(true);
               if (error instanceof AxiosError) {
                 setInvalidText(error?.response?.data?.message || "Creation failed");
               } else {

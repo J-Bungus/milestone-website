@@ -10,6 +10,7 @@ import "../assets/styles/Account.css";
 const EditProductForm = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
 
   // Switched to <any> to support the new big_unit_type without strict type errors
   const [product, setProduct] = useState<any>({
@@ -82,7 +83,6 @@ const EditProductForm = () => {
       if (fetchedProduct) {
         setProduct({
           ...fetchedProduct,
-          // Fallbacks just in case the old product data doesn't have these exact fields yet
           unit_type: fetchedProduct.unit_type || "pcs/Box",
           big_unit_type: fetchedProduct.big_unit_type || "bxs/Case"
         });
@@ -176,6 +176,7 @@ const EditProductForm = () => {
                   <div key={field.key} className="account-field">
                     <span>{field.text}</span>
                     <select
+                      className="form-select"
                       value={product.unit_type}
                       onChange={(e) => {
                         const newUnit = e.target.value;
@@ -193,7 +194,6 @@ const EditProductForm = () => {
                           has_big_package: hasBigPackage
                         });
                       }}
-                      style={{ padding: "10px", boxSizing: "border-box", borderRadius: "4px", border: "1px solid #ccc" }}
                     >
                       <option value="pcs/Box">pcs/Box</option>
                       <option value="pcs/Package">pcs/Package</option>
@@ -209,9 +209,9 @@ const EditProductForm = () => {
                   <div key={field.key} className="account-field">
                     <span>{field.text}</span>
                     <select
+                      className="form-select"
                       value={product.big_unit_type}
                       onChange={(e) => setProduct({ ...product, big_unit_type: e.target.value })}
-                      style={{ padding: "10px", boxSizing: "border-box", borderRadius: "4px", border: "1px solid #ccc" }}
                     >
                       <option value="pcs/Big Package">pcs / Big pkg</option>
                       <option value="bxs/Case">bxs/Case</option>
@@ -225,10 +225,10 @@ const EditProductForm = () => {
                   <div key={field.key} className="account-field">
                     <span>{field.key === "package_size" ? product.unit_type : product.big_unit_type}</span>
                     <input  
+                      className="form-input"
                       type="number"
                       value={product[field.key] === "" ? "" :product[field.key] as number}
                       onChange={e => setProduct({ ...product, [field.key]: e.target.value === "" ? "" : Number(e.target.value) })}
-                      style={{ width: "100%", padding: "10px", boxSizing: "border-box", borderRadius: "4px", border: "1px solid #ccc" }}
                     />
                   </div>
                 );
@@ -246,13 +246,17 @@ const EditProductForm = () => {
                         multiple
                         onChange={e => {
                           if (!e.target.files) return;
+                          
+                          const newFiles = Array.from(e.target.files);
+                          const newUrls = newFiles.map(file => URL.createObjectURL(file));
 
-                          const filesList = Array.from(e.target.files);
-                          setFiles(filesList);
-                          setProduct({
-                            ...product,
-                            images: filesList.map(file => URL.createObjectURL(file))
-                          });
+                          setFiles(prevFiles => [...prevFiles, ...newFiles]);
+                          setProduct((prevProduct: any) => ({
+                            ...prevProduct,
+                            images: [...prevProduct.images, ...newUrls]
+                          }));
+
+                          e.target.value = "";
                         }}
                       />
                     </div>
@@ -265,6 +269,30 @@ const EditProductForm = () => {
                         return (
                           <div key={image + i} className="preview-wrapper">
                             <img className="preview-img" src={imgSrc} alt="Product Preview"/>
+                            <button
+                              type="button" 
+                              className="delete-image-btn"
+                              onClick={() => {
+                                const updatedImages = [...product.images];
+                                const imageToRemove = updatedImages[i];
+                                
+                                // If deleting a NEW local file, we must also remove it from the 'files' array
+                                if (imageToRemove.startsWith('blob:')) {
+                                  // Count how many 'blob:' images came BEFORE this one to find its exact index in the files array
+                                  const blobIndex = updatedImages.slice(0, i).filter(img => img.startsWith('blob:')).length;
+                                  const updatedFiles = [...files];
+                                  updatedFiles.splice(blobIndex, 1);
+                                  setFiles(updatedFiles);
+                                  URL.revokeObjectURL(imageToRemove);
+                                }
+                                
+                                // Always remove it from the visual array so the backend knows it's gone
+                                updatedImages.splice(i, 1);
+                                setProduct({ ...product, images: updatedImages });
+                              }}
+                            >
+                              X
+                            </button>
                           </div>
                         );
                       })}
@@ -278,11 +306,11 @@ const EditProductForm = () => {
                   <div key={field.key} className="account-field description">
                     <span>{field.text}</span>
                     <textarea
+                      className="description-input"
                       id={field.key}
-                      rows={4} // Matched to AddProductForm
+                      rows={5} 
                       value={product[field.key] as string}
                       onChange={e => setProduct({...product, [field.key]: e.target.value})}
-                      style={{ width: '100%', boxSizing: 'border-box', resize: 'vertical' }}
                     />
                   </div>
                 );
@@ -292,14 +320,14 @@ const EditProductForm = () => {
                 return (
                   <div key={field.key} className="account-field">
                     <span>{field.text}</span>
-                    <div style={{ width: '100%', boxSizing: 'border-box' }}>
+                    <div className="select-wrapper">
                       <Select
                         isMulti
                         value={categoryOptions
-                          .filter(cat => product.category_ids?.includes(cat.id))
+                          .filter(cat => product.category_ids?.includes(Number(cat.id)))
                           .map(cat => ({ value: String(cat.id), label: cat.path || cat.name }))
                         }
-                        onChange={options => setProduct({...product, categories: options.map(option => option.value) })}
+                        onChange={options => setProduct({...product, category_ids: options.map(option => Number(option.value)), categories: options.map(option => option.label)})}
                         options={categoryOptions.map(category => ({ value: String(category.id), label: category.path || category.name }))}
                         styles={{
                           multiValueLabel: (base) => ({
@@ -323,22 +351,22 @@ const EditProductForm = () => {
                 <div key={field.key} className="account-field">
                   <span>{field.text}</span>
                   <input
+                    className="form-input"
                     type={field.key.includes('price') || field.key.includes('size') ? 'number' : 'text'}
                     id={field.key}
                     disabled={field.key === "msa_id"} // Important so they can't change the primary identifier!
                     value={product[field.key] === "" ? "" : product[field.key] as string | number}
                     onChange={e => setProduct({...product, [field.key]: e.target.value})}
                     style={{ 
-                      backgroundColor: field.key === "msa_id" ? "#f5f5f5" : "white",
-                      width: '100%',
-                      boxSizing: 'border-box'
+                      // Keeping this inline as it's a dynamic visual indicator that it's disabled
+                      backgroundColor: field.key === "msa_id" ? "#f5f5f5" : "white"
                     }}
                   />
                 </div>
               );
             })}
             
-            { showInvalidText && <div style={{color: "red", marginTop: "10px"}}> {invalidText} </div>}
+            { showInvalidText && <div style={{color: isError ? "red" : "green", marginTop: "10px"}}> {invalidText} </div>}
             
             {/* Action Buttons Container */}
             <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }}>
@@ -350,7 +378,6 @@ const EditProductForm = () => {
                   setLoading(true);
                   setShowInvalidText(false);
 
-                  // Ensure we hit the patch endpoint for updates!
                   const endpoint = `${process.env.REACT_APP_API}/products/update/${encodeURIComponent(product.msa_id || "")}`;
                   const formData = new FormData();
                   
@@ -367,6 +394,7 @@ const EditProductForm = () => {
                       headers: { Authorization: `Bearer ${token}` }
                     });
 
+                    setIsError(false);
                     setInvalidText("Product updated successfully!");
                     setShowInvalidText(true);
                     setTimeout(() => {setShowInvalidText(false); setIsLoaded(false);}, 3000); 
@@ -378,6 +406,7 @@ const EditProductForm = () => {
                     } else {
                       setInvalidText("An unexpected error occurred");
                     }
+                    setIsError(true);
                     setShowInvalidText(true);
                   } finally {
                     setLoading(false);
